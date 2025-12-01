@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Singer A",
+    "description": "The rising star of pop music.",
+    "cost": 20,
+    "image": "http://localhost:3000/photos/placeholder.jpeg"
+  },
+  {
+    "name": "Singer B",
+    "description": "A legendary rock icon.",
+    "cost": 25,
+    "image": "http://localhost:3000/photos/placeholder.jpeg"
+  },
+  {
+    "name": "Singer C",
+    "description": "Soulful jazz vocalist.",
+    "cost": 15,
+    "image": "http://localhost:3000/photos/placeholder.jpeg"
+  },
+  {
+    "name": "Singer D",
+    "description": "Chart-topping hip-hop artist.",
+    "cost": 30,
+    "image": "http://localhost:3000/photos/placeholder.jpeg"
+  },
+  {
+    "name": "Singer E",
+    "description": "Indie folk singer-songwriter.",
+    "cost": 10,
+    "image": "http://localhost:3000/photos/placeholder.jpeg"
+  },
+  {
+    "name": "Singer F",
+    "description": "Electronic music producer and vocalist.",
+    "cost": 22,
+    "image": "http://localhost:3000/photos/placeholder.jpeg"
+  },
+  {
+    "name": "Singer G",
+    "description": "Classical opera soprano.",
+    "cost": 18,
+    "image": "http://localhost:3000/photos/placeholder.jpeg"
+  },
+  {
+    "name": "Singer H",
+    "description": "Country music sensation.",
+    "cost": 28,
+    "image": "http://localhost:3000/photos/placeholder.jpeg"
+  }
+]
