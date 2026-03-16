@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 const db = require('./config/db');
+const { syncPointsFromCsv } = require('./utils/syncPoints');
 
 // Middleware
 app.use(express.json());
@@ -93,36 +94,11 @@ const initDb = async () => {
         console.error('Error syncing singers from JSON:', err.message);
     }
 
-    // Sync points from CSV
     try {
-        const pointsPath = path.join(__dirname, '../data/points.csv');
-        if (fs.existsSync(pointsPath)) {
-            const csvData = fs.readFileSync(pointsPath, 'utf8');
-            const lines = csvData.trim().split('\n');
-            // Skip header
-            const header = lines[0].split(',');
-            
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
-                const parts = line.split(',');
-                const name = parts[0];
-                let totalPoints = 0;
-                
-                // Sum points from all day columns (assuming format: name,day1,day2,...)
-                for (let j = 1; j < parts.length; j++) {
-                    totalPoints += parseInt(parts[j]) || 0;
-                }
-
-                await db.query(
-                    'UPDATE singers SET total_score = $1 WHERE name = $2',
-                    [totalPoints, name]
-                );
-            }
-            console.log('Synced points from CSV');
-        }
+      await syncPointsFromCsv(db);
+      console.log('Synced points from CSV');
     } catch (err) {
-        console.error('Error syncing points from CSV:', err.message);
+      console.error('Error syncing points from CSV:', err.message);
     }
 
     console.log('Database initialized');

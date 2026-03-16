@@ -1,7 +1,10 @@
 const db = require('../config/db');
+const { syncPointsFromCsv } = require('../utils/syncPoints');
 
 exports.getLeaderboard = async (req, res) => {
   try {
+    await syncPointsFromCsv(db);
+
     const leaderboard = await db.query(`
       SELECT u.username, SUM(s.total_score) as total_score
       FROM users u
