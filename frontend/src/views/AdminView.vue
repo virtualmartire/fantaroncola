@@ -83,7 +83,7 @@ onMounted(fetchSingers)
           <input v-model="newSinger.description" type="text" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
         </div>
         <div>
-          <label class="field-label block text-sm font-medium">Costo</label>
+          <label class="field-label block text-sm font-medium">Roncoli</label>
           <input v-model.number="newSinger.cost" type="number" required class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
         </div>
         <div>
@@ -110,7 +110,7 @@ onMounted(fetchSingers)
                 <input v-model="editForm.description" type="text" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
               </div>
               <div>
-                <label class="field-label block text-sm font-medium">Costo</label>
+                <label class="field-label block text-sm font-medium">Roncoli</label>
                 <input v-model.number="editForm.cost" type="number" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
               </div>
               <div>
@@ -141,7 +141,7 @@ onMounted(fetchSingers)
                 <div class="truncate text-sm font-medium text-[#ffe09a]">{{ singer.name }}</div>
                 <div class="gold-copy text-sm">{{ singer.description }}</div>
                 <div class="gold-muted text-sm">
-                  Costo: {{ singer.cost }} | Punteggio: {{ singer.total_score }}
+                  Roncoli: {{ singer.cost }} | Punteggio: {{ singer.total_score }}
                 </div>
               </div>
             </div>

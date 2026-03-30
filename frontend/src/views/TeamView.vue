@@ -34,7 +34,7 @@ const isSingerSelected = (singerId) => store.userTeam.some((singer) => singer.id
       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div class="grid gap-4 sm:grid-cols-2">
           <div>
-            <div class="gold-muted text-sm font-medium">Budget residuo</div>
+            <div class="gold-muted text-sm font-medium">Roncoli residui</div>
             <div
               class="mt-1 text-3xl font-black"
               :class="store.currentBudget < 10 ? 'text-[#f2a8a3]' : 'text-[#ffe09a]'"
@@ -71,7 +71,7 @@ const isSingerSelected = (singerId) => store.userTeam.some((singer) => singer.id
         <div>
           <h1 class="text-2xl font-black tracking-tight text-[#fff0cf]">La tua squadra</h1>
           <p class="gold-copy mt-1 text-sm">
-            Scegli 5 cantanti e ottimizza il budget per restare competitivo.
+            Scegli 5 cantanti e ottimizza i tuoi roncoli per restare competitivo.
           </p>
         </div>
       </div>
@@ -104,7 +104,7 @@ const isSingerSelected = (singerId) => store.userTeam.some((singer) => singer.id
             >
           </div>
           <div class="text-center text-lg font-bold text-[#fff0cf]">{{ singer.name }}</div>
-          <div class="gold-copy text-center text-sm">{{ singer.cost }} crediti</div>
+          <div class="gold-copy text-center text-sm">{{ singer.cost }} roncoli</div>
         </div>
       </div>
     </section>
@@ -113,7 +113,7 @@ const isSingerSelected = (singerId) => store.userTeam.some((singer) => singer.id
       <div class="mb-4">
         <h2 class="text-2xl font-black tracking-tight text-[#fff0cf]">Cantanti disponibili</h2>
         <p class="gold-copy mt-1 text-sm">
-          Aggiungi gli artisti che preferisci finche hai slot e crediti a disposizione.
+          Aggiungi gli artisti che preferisci finche hai slot e roncoli a disposizione.
         </p>
       </div>
 

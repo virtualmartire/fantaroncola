@@ -44,7 +44,7 @@ exports.addSinger = async (req, res) => {
         return res.status(400).json({ message: 'Questo cantante e gia nella tua squadra' });
     }
 
-    // Check budget (optional, but good)
+    // Check roncoli disponibili
     // Get current team cost
     const teamCostResult = await db.query(
         `SELECT SUM(s.cost) as total_cost 
@@ -55,8 +55,8 @@ exports.addSinger = async (req, res) => {
     );
     const currentCost = parseInt(teamCostResult.rows[0].total_cost || 0);
     
-    if (currentCost + singer.cost > 100) { // Hardcoded 100 budget
-        return res.status(400).json({ message: 'Hai superato il budget disponibile' });
+    if (currentCost + singer.cost > 100) { // Hardcoded 100 roncoli
+        return res.status(400).json({ message: 'Non hai abbastanza roncoli disponibili' });
     }
 
     await db.query('INSERT INTO teams (user_id, singer_id) VALUES ($1, $2)', [req.user.id, singerId]);

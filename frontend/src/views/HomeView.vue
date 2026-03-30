@@ -70,14 +70,14 @@ const toggleMode = () => {
         Entra in FantaRoncola e prepara la tua formazione.
       </h1>
       <p class="gold-copy mt-4 text-base leading-7">
-        Il fantaconcorso dedicato ai cantanti dove contano intuito, budget e colpi di scena.
+        Il fantaconcorso dedicato ai cantanti dove contano intuito, roncoli e colpi di scena.
         Registrati o accedi per schierare i tuoi 5 artisti.
       </p>
 
       <div class="mt-8 grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
         <div class="gold-stat rounded-2xl px-5 py-4">
           <div class="text-2xl font-black text-[#ffe9b0]">100</div>
-          <div class="gold-copy mt-1 text-sm">crediti per costruire la squadra</div>
+          <div class="gold-copy mt-1 text-sm">roncoli per costruire la squadra</div>
         </div>
         <div class="gold-stat rounded-2xl px-5 py-4">
           <div class="text-2xl font-black text-[#ffe9b0]">5</div>

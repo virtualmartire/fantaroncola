@@ -1,7 +1,7 @@
 ## Features
 [x] tradurre in ita
 [x] grafica: palette elegante (sull'oro), tema scuro
-[] budget e costi in "roncoli"
+[x] budget e costi in "roncoli"
 [] captcha
 [] dati dei cantanti disponibili
 [] regolamento
