@@ -6,6 +6,7 @@ const path = require('path');
 const app = express();
 const db = require('./config/db');
 const { syncPointsFromCsv } = require('./utils/syncPoints');
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Middleware
 app.set('trust proxy', 1);
@@ -35,96 +36,111 @@ app.use('/api/leaderboard', require('./routes/leaderboardRoutes'));
 app.use('/photos', express.static(path.join(__dirname, '../data/photos')));
 
 const PORT = process.env.PORT || 3000;
+const DB_INIT_MAX_ATTEMPTS = 15;
+const DB_INIT_RETRY_MS = 2000;
 
 // Database Initialization (Simple)
 const initDb = async () => {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      username VARCHAR(255) UNIQUE NOT NULL,
+      password_hash VARCHAR(255) NOT NULL,
+      is_admin BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+  
+  // Add is_admin if not exists (migration)
   try {
-    await db.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        username VARCHAR(255) UNIQUE NOT NULL,
-        password_hash VARCHAR(255) NOT NULL,
-        is_admin BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-    
-    // Add is_admin if not exists (migration)
-    try {
-        await db.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE');
-    } catch (e) { console.log('Column is_admin might already exist'); }
+      await db.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE');
+  } catch (e) { console.log('Column is_admin might already exist'); }
 
-    // Add is_team_locked if not exists (migration)
-    try {
-        await db.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_team_locked BOOLEAN DEFAULT FALSE');
-    } catch (e) { console.log('Column is_team_locked might already exist'); }
+  // Add is_team_locked if not exists (migration)
+  try {
+      await db.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_team_locked BOOLEAN DEFAULT FALSE');
+  } catch (e) { console.log('Column is_team_locked might already exist'); }
 
-    await db.query(`
-      CREATE TABLE IF NOT EXISTS singers (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) UNIQUE NOT NULL,
-        description TEXT,
-        cost INTEGER NOT NULL,
-        image VARCHAR(255),
-        total_score INTEGER DEFAULT 0
-      );
-    `);
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS singers (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255) UNIQUE NOT NULL,
+      description TEXT,
+      cost INTEGER NOT NULL,
+      image VARCHAR(255),
+      total_score INTEGER DEFAULT 0
+    );
+  `);
 
-    // Add description if not exists (migration)
-    try {
-        await db.query('ALTER TABLE singers ADD COLUMN IF NOT EXISTS description TEXT');
-    } catch (e) { console.log('Column description might already exist'); }
+  // Add description if not exists (migration)
+  try {
+      await db.query('ALTER TABLE singers ADD COLUMN IF NOT EXISTS description TEXT');
+  } catch (e) { console.log('Column description might already exist'); }
 
-    // Add total_score if not exists (migration)
-    try {
-        await db.query('ALTER TABLE singers ADD COLUMN IF NOT EXISTS total_score INTEGER DEFAULT 0');
-    } catch (e) { console.log('Column total_score might already exist'); }
-    
-    // Add UNIQUE constraint on name if not exists (migration)
-    try {
-        await db.query('ALTER TABLE singers ADD CONSTRAINT singers_name_key UNIQUE (name)');
-    } catch (e) { console.log('Constraint singers_name_key might already exist'); }
+  // Add total_score if not exists (migration)
+  try {
+      await db.query('ALTER TABLE singers ADD COLUMN IF NOT EXISTS total_score INTEGER DEFAULT 0');
+  } catch (e) { console.log('Column total_score might already exist'); }
+  
+  // Add UNIQUE constraint on name if not exists (migration)
+  try {
+      await db.query('ALTER TABLE singers ADD CONSTRAINT singers_name_key UNIQUE (name)');
+  } catch (e) { console.log('Constraint singers_name_key might already exist'); }
 
-    await db.query(`
-      CREATE TABLE IF NOT EXISTS teams (
-        id SERIAL PRIMARY KEY,
-        user_id INTEGER REFERENCES users(id),
-        singer_id INTEGER REFERENCES singers(id),
-        UNIQUE(user_id, singer_id)
-      );
-    `);
-    
-    // Sync singers from JSON
-    try {
-        const singersData = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/singers.json'), 'utf8'));
-        for (const singer of singersData) {
-            await db.query(
-                `INSERT INTO singers (name, description, cost, image, total_score) 
-                 VALUES ($1, $2, $3, $4, 0) 
-                 ON CONFLICT (name) 
-                 DO UPDATE SET description = $2, cost = $3, image = $4`,
-                [singer.name, singer.description, singer.cost, singer.image]
-            );
-        }
-        console.log('Synced singers from JSON');
-    } catch (err) {
-        console.error('Error syncing singers from JSON:', err.message);
-    }
-
-    try {
-      await syncPointsFromCsv(db);
-      console.log('Synced points from CSV');
-    } catch (err) {
-      console.error('Error syncing points from CSV:', err.message);
-    }
-
-    console.log('Database initialized');
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS teams (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id),
+      singer_id INTEGER REFERENCES singers(id),
+      UNIQUE(user_id, singer_id)
+    );
+  `);
+  
+  // Sync singers from JSON
+  try {
+      const singersData = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/singers.json'), 'utf8'));
+      for (const singer of singersData) {
+          await db.query(
+              `INSERT INTO singers (name, description, cost, image, total_score) 
+               VALUES ($1, $2, $3, $4, 0) 
+               ON CONFLICT (name) 
+               DO UPDATE SET description = $2, cost = $3, image = $4`,
+              [singer.name, singer.description, singer.cost, singer.image]
+          );
+      }
+      console.log('Synced singers from JSON');
   } catch (err) {
-    console.error('Error initializing database:', err);
+      console.error('Error syncing singers from JSON:', err.message);
+  }
+
+  try {
+    await syncPointsFromCsv(db);
+    console.log('Synced points from CSV');
+  } catch (err) {
+    console.error('Error syncing points from CSV:', err.message);
+  }
+
+  console.log('Database initialized');
+};
+
+const startServer = async () => {
+  for (let attempt = 1; attempt <= DB_INIT_MAX_ATTEMPTS; attempt += 1) {
+    try {
+      await initDb();
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+      });
+      return;
+    } catch (err) {
+      console.error(`Database init attempt ${attempt}/${DB_INIT_MAX_ATTEMPTS} failed:`, err.message);
+
+      if (attempt === DB_INIT_MAX_ATTEMPTS) {
+        process.exit(1);
+      }
+
+      await wait(DB_INIT_RETRY_MS);
+    }
   }
 };
 
-app.listen(PORT, async () => {
-  await initDb();
-  console.log(`Server running on port ${PORT}`);
-});
+startServer();

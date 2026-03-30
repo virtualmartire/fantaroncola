@@ -75,13 +75,13 @@ exports.login = async (req, res) => {
     // Check user
     const user = await db.query('SELECT * FROM users WHERE username = $1', [username]);
     if (user.rows.length === 0) {
-      return res.status(400).json({ message: 'Credenziali non valide' });
+      return res.status(404).json({ message: 'Utente non trovato' });
     }
 
     // Check password
     const isMatch = await bcrypt.compare(password, user.rows[0].password_hash);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Credenziali non valide' });
+      return res.status(400).json({ message: 'Password non corretta' });
     }
 
     // Return token

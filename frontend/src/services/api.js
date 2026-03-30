@@ -37,11 +37,23 @@ export const api = {
       const data = await parseResponse(response)
 
       if (!response.ok) {
-        throw new Error(data?.message || 'Si e verificato un errore')
+        if (data?.message) {
+          throw new Error(data.message)
+        }
+
+        if (response.status >= 500) {
+          throw new Error('Il server non e raggiungibile al momento. Riprova tra poco.')
+        }
+
+        throw new Error('Si e verificato un errore')
       }
 
       return data
     } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error('Il server non e raggiungibile al momento. Riprova tra poco.')
+      }
+
       throw error
     }
   },
