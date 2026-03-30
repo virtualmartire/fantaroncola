@@ -1,3 +1,6 @@
+require('dotenv').config();
+
+const bcrypt = require('bcryptjs');
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
@@ -9,6 +12,27 @@ const { syncPointsFromCsv } = require('./utils/syncPoints');
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const getSeedKey = (singer, index) => singer.seed_key || `slot-${index + 1}`;
 const getLegacyPlaceholderName = (index) => `Singer ${String.fromCharCode(65 + index)}`;
+const ensureAdminUser = async () => {
+  const adminUsername = process.env.ADMIN_USERNAME?.trim();
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (!adminUsername || !adminPassword) {
+    console.log('Admin bootstrap skipped: missing ADMIN_USERNAME or ADMIN_PASSWORD');
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash(adminPassword, 10);
+
+  await db.query(
+    `INSERT INTO users (username, password_hash, is_admin)
+     VALUES ($1, $2, TRUE)
+     ON CONFLICT (username)
+     DO UPDATE SET password_hash = EXCLUDED.password_hash, is_admin = TRUE`,
+    [adminUsername, passwordHash]
+  );
+
+  console.log(`Ensured admin user "${adminUsername}"`);
+};
 
 // Middleware
 app.set('trust proxy', 1);
@@ -62,6 +86,8 @@ const initDb = async () => {
   try {
       await db.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_team_locked BOOLEAN DEFAULT FALSE');
   } catch (e) { console.log('Column is_team_locked might already exist'); }
+
+  await ensureAdminUser();
 
   await db.query(`
     CREATE TABLE IF NOT EXISTS singers (
