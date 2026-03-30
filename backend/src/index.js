@@ -72,6 +72,9 @@ const initDb = async () => {
       description TEXT,
       cost INTEGER NOT NULL,
       image VARCHAR(255),
+      day1_score INTEGER DEFAULT 0,
+      day2_score INTEGER DEFAULT 0,
+      day3_score INTEGER DEFAULT 0,
       total_score INTEGER DEFAULT 0
     );
   `);
@@ -95,6 +98,21 @@ const initDb = async () => {
   try {
       await db.query('ALTER TABLE singers ADD COLUMN IF NOT EXISTS description TEXT');
   } catch (e) { console.log('Column description might already exist'); }
+
+  // Add day1_score if not exists (migration)
+  try {
+      await db.query('ALTER TABLE singers ADD COLUMN IF NOT EXISTS day1_score INTEGER DEFAULT 0');
+  } catch (e) { console.log('Column day1_score might already exist'); }
+
+  // Add day2_score if not exists (migration)
+  try {
+      await db.query('ALTER TABLE singers ADD COLUMN IF NOT EXISTS day2_score INTEGER DEFAULT 0');
+  } catch (e) { console.log('Column day2_score might already exist'); }
+
+  // Add day3_score if not exists (migration)
+  try {
+      await db.query('ALTER TABLE singers ADD COLUMN IF NOT EXISTS day3_score INTEGER DEFAULT 0');
+  } catch (e) { console.log('Column day3_score might already exist'); }
 
   // Add total_score if not exists (migration)
   try {
@@ -169,8 +187,8 @@ const initDb = async () => {
           }
 
           await db.query(
-            `INSERT INTO singers (seed_key, name, song_title, description, cost, image, total_score) 
-             VALUES ($1, $2, $3, $4, $5, $6, 0) 
+            `INSERT INTO singers (seed_key, name, song_title, description, cost, image, day1_score, day2_score, day3_score, total_score) 
+             VALUES ($1, $2, $3, $4, $5, $6, 0, 0, 0, 0) 
              ON CONFLICT (seed_key) 
              DO UPDATE SET name = $2, song_title = $3, description = $4, cost = $5, image = $6`,
             [seedKey, singer.name, singer.song_title, singer.description, singer.cost, singer.image]

@@ -65,11 +65,17 @@ const syncPointsFromCsv = async (db) => {
     const name = parts[0];
     if (!name) continue;
 
-    const totalPoints = parts.slice(1).reduce((sum, value) => {
+    const day1Score = parseInt(parts[1], 10) || 0;
+    const day2Score = parseInt(parts[2], 10) || 0;
+    const day3Score = parseInt(parts[3], 10) || 0;
+    const totalPoints = [day1Score, day2Score, day3Score].reduce((sum, value) => {
       return sum + (parseInt(value, 10) || 0);
     }, 0);
 
-    await db.query('UPDATE singers SET total_score = $1 WHERE name = $2', [totalPoints, name]);
+    await db.query(
+      'UPDATE singers SET day1_score = $1, day2_score = $2, day3_score = $3, total_score = $4 WHERE name = $5',
+      [day1Score, day2Score, day3Score, totalPoints, name]
+    );
   }
 
   lastPointsSyncAt = now;
