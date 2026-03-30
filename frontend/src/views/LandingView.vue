@@ -42,49 +42,49 @@ const strengths = [
 
 <template>
   <div class="space-y-12 py-4 sm:py-8">
-    <section class="overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-700 via-indigo-600 to-fuchsia-600 text-white shadow-xl">
+    <section class="hero-surface overflow-hidden rounded-[2rem]">
       <div class="grid gap-10 px-6 py-10 sm:px-10 lg:grid-cols-[1.2fr_0.8fr] lg:px-12 lg:py-14">
         <div class="space-y-6">
-          <span class="inline-flex items-center rounded-full bg-white/15 px-4 py-1 text-sm font-medium backdrop-blur">
+          <span class="gold-pill inline-flex items-center rounded-full px-4 py-1 text-sm font-medium backdrop-blur">
             Fantaconcorso di cantanti
           </span>
           <div class="space-y-4">
-            <h1 class="max-w-3xl text-4xl font-black tracking-tight sm:text-5xl">
+            <h1 class="max-w-3xl text-4xl font-black tracking-tight text-[#fff3db] sm:text-5xl">
               Scegli la tua squadra, gestisci il budget e punta alla vetta di FantaRoncola.
             </h1>
-            <p class="max-w-2xl text-lg text-indigo-50">
-              Un gioco semplice e competitivo per seguire il concorso musicale con piu pathos:
+            <p class="gold-copy max-w-2xl text-lg">
+              Una serata da red carpet trasformata in gioco: segui il concorso musicale con piu pathos,
               selezioni 5 artisti, confermi la rosa e aspetti che i punti facciano la differenza.
             </p>
           </div>
           <div class="flex flex-col gap-3 sm:flex-row">
             <RouterLink
               :to="authStore.isAuthenticated ? '/team' : '/accedi'"
-              class="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50"
+              class="gold-button inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition"
             >
               {{ authStore.isAuthenticated ? 'Vai alla mia squadra' : 'Accedi o registrati' }}
             </RouterLink>
             <a
               href="#come-funziona"
-              class="inline-flex items-center justify-center rounded-xl border border-white/40 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              class="ghost-button inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition"
             >
               Scopri come funziona
             </a>
           </div>
         </div>
 
-        <div class="rounded-3xl bg-white/10 p-6 backdrop-blur">
-          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-100">
+        <div class="surface-card-soft rounded-3xl p-6 backdrop-blur">
+          <p class="gold-kicker text-sm font-semibold uppercase">
             Il gioco in breve
           </p>
           <div class="mt-6 grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
             <div
               v-for="item in highlights"
               :key="item.label"
-              class="rounded-2xl bg-white/10 px-5 py-4"
+              class="gold-stat rounded-2xl px-5 py-4"
             >
-              <div class="text-3xl font-black">{{ item.value }}</div>
-              <div class="mt-1 text-sm text-indigo-100">{{ item.label }}</div>
+              <div class="text-3xl font-black text-[#ffe9b0]">{{ item.value }}</div>
+              <div class="gold-copy mt-1 text-sm">{{ item.label }}</div>
             </div>
           </div>
         </div>
@@ -98,78 +98,78 @@ const strengths = [
       <article
         v-for="(step, index) in steps"
         :key="step.title"
-        class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200"
+        class="surface-card rounded-2xl p-6"
       >
-        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700">
+        <div class="gold-pill flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold">
           {{ index + 1 }}
         </div>
-        <h2 class="mt-4 text-xl font-bold text-gray-900">{{ step.title }}</h2>
-        <p class="mt-2 text-sm leading-6 text-gray-600">{{ step.description }}</p>
+        <h2 class="mt-4 text-xl font-bold text-[#fff0cf]">{{ step.title }}</h2>
+        <p class="gold-copy mt-2 text-sm leading-6">{{ step.description }}</p>
       </article>
     </section>
 
     <section class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-      <div class="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-gray-200">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">
+      <div class="surface-card rounded-3xl p-8">
+        <p class="gold-kicker text-sm font-semibold uppercase">
           Perche partecipare
         </p>
-        <h2 class="mt-3 text-3xl font-black tracking-tight text-gray-900">
+        <h2 class="mt-3 text-3xl font-black tracking-tight text-[#fff0cf]">
           Il fantaconcorso che trasforma ogni esibizione in una scelta strategica.
         </h2>
         <div class="mt-6 space-y-4">
           <div
             v-for="item in strengths"
             :key="item"
-            class="rounded-2xl bg-gray-50 px-5 py-4 text-gray-700"
+            class="gold-stat rounded-2xl px-5 py-4 text-sm leading-6 text-[#ead7af]"
           >
             {{ item }}
           </div>
         </div>
       </div>
 
-      <div class="rounded-3xl bg-gray-900 p-8 text-white shadow-sm">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-fuchsia-200">
+      <div class="surface-card rounded-3xl p-8">
+        <p class="gold-kicker text-sm font-semibold uppercase">
           La tua missione
         </p>
-        <h2 class="mt-3 text-2xl font-black tracking-tight">
+        <h2 class="mt-3 text-2xl font-black tracking-tight text-[#fff0cf]">
           Costruisci la rosa migliore prima che i giochi siano fatti.
         </h2>
-        <p class="mt-4 text-sm leading-6 text-gray-300">
+        <p class="gold-copy mt-4 text-sm leading-6">
           Hai un budget limitato e solo 5 slot disponibili. Scegli i cantanti giusti,
           controlla la classifica e difendi il tuo posto fino all'ultimo aggiornamento.
         </p>
-        <div class="mt-8 space-y-3 text-sm text-gray-200">
-          <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+        <div class="mt-8 space-y-3 text-sm text-[#ead7af]">
+          <div class="gold-stat rounded-2xl px-4 py-3">
             Rosa da 5 cantanti con budget massimo di 100 crediti.
           </div>
-          <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+          <div class="gold-stat rounded-2xl px-4 py-3">
             Possibilita di bloccare la squadra quando sei convinto delle tue scelte.
           </div>
-          <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+          <div class="gold-stat rounded-2xl px-4 py-3">
             Classifica aggiornata in base ai punteggi del contest.
           </div>
         </div>
       </div>
     </section>
 
-    <section class="rounded-3xl bg-indigo-50 px-6 py-8 text-center ring-1 ring-indigo-100 sm:px-10">
-      <h2 class="text-3xl font-black tracking-tight text-gray-900">
+    <section class="hero-surface rounded-3xl px-6 py-8 text-center sm:px-10">
+      <h2 class="text-3xl font-black tracking-tight text-[#fff3db]">
         Pronto a giocarti il titolo?
       </h2>
-      <p class="mx-auto mt-3 max-w-2xl text-base text-gray-600">
+      <p class="gold-copy mx-auto mt-3 max-w-2xl text-base">
         Entra in FantaRoncola, crea la tua squadra di cantanti e scopri chi domina il fantaconcorso.
       </p>
       <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
         <RouterLink
           :to="authStore.isAuthenticated ? '/team' : '/accedi'"
-          class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700"
+          class="gold-button inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition"
         >
           {{ authStore.isAuthenticated ? 'Apri la squadra' : 'Inizia subito' }}
         </RouterLink>
         <RouterLink
           v-if="authStore.isAuthenticated"
           to="/leaderboard"
-          class="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-sm font-semibold text-indigo-700 ring-1 ring-indigo-200 transition hover:bg-indigo-100"
+          class="ghost-button inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition"
         >
           Guarda la classifica
         </RouterLink>

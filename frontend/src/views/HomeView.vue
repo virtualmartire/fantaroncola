@@ -62,43 +62,43 @@ const toggleMode = () => {
 
 <template>
   <div class="grid gap-8 py-6 lg:grid-cols-[0.9fr_1.1fr]">
-    <section class="rounded-3xl bg-gray-900 p-8 text-white shadow-sm">
-      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-fuchsia-200">
+    <section class="hero-surface rounded-3xl p-8">
+      <p class="gold-kicker text-sm font-semibold uppercase">
         Accesso giocatori
       </p>
-      <h1 class="mt-3 text-4xl font-black tracking-tight">
+      <h1 class="mt-3 text-4xl font-black tracking-tight text-[#fff3db]">
         Entra in FantaRoncola e prepara la tua formazione.
       </h1>
-      <p class="mt-4 text-base leading-7 text-gray-300">
+      <p class="gold-copy mt-4 text-base leading-7">
         Il fantaconcorso dedicato ai cantanti dove contano intuito, budget e colpi di scena.
         Registrati o accedi per schierare i tuoi 5 artisti.
       </p>
 
       <div class="mt-8 grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-        <div class="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
-          <div class="text-2xl font-black">100</div>
-          <div class="mt-1 text-sm text-gray-300">crediti per costruire la squadra</div>
+        <div class="gold-stat rounded-2xl px-5 py-4">
+          <div class="text-2xl font-black text-[#ffe9b0]">100</div>
+          <div class="gold-copy mt-1 text-sm">crediti per costruire la squadra</div>
         </div>
-        <div class="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
-          <div class="text-2xl font-black">5</div>
-          <div class="mt-1 text-sm text-gray-300">cantanti da selezionare</div>
+        <div class="gold-stat rounded-2xl px-5 py-4">
+          <div class="text-2xl font-black text-[#ffe9b0]">5</div>
+          <div class="gold-copy mt-1 text-sm">cantanti da selezionare</div>
         </div>
-        <div class="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
-          <div class="text-2xl font-black">1</div>
-          <div class="mt-1 text-sm text-gray-300">classifica da conquistare</div>
+        <div class="gold-stat rounded-2xl px-5 py-4">
+          <div class="text-2xl font-black text-[#ffe9b0]">1</div>
+          <div class="gold-copy mt-1 text-sm">classifica da conquistare</div>
         </div>
       </div>
     </section>
 
-    <section class="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-gray-200">
+    <section class="surface-card rounded-3xl p-8">
       <div class="space-y-2">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">
+        <p class="gold-kicker text-sm font-semibold uppercase">
           {{ isRegistering ? 'Registrazione' : 'Accesso' }}
         </p>
-        <h2 class="text-3xl font-black tracking-tight text-gray-900">
+        <h2 class="text-3xl font-black tracking-tight text-[#fff0cf]">
           {{ title }}
         </h2>
-        <p class="text-sm leading-6 text-gray-600">
+        <p class="gold-copy text-sm leading-6">
           {{ subtitle }}
         </p>
       </div>
@@ -106,33 +106,33 @@ const toggleMode = () => {
       <form class="mt-8 space-y-6" @submit.prevent="handleAuth">
         <div class="space-y-4">
           <div>
-            <label for="username" class="mb-2 block text-sm font-medium text-gray-700">Username</label>
+            <label for="username" class="field-label mb-2 block text-sm font-medium">Username</label>
             <input
               id="username"
               v-model="username"
               name="username"
               type="text"
               required
-              class="block w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              class="field-input block px-4 py-3 shadow-sm transition"
               placeholder="Scegli il tuo username"
             >
           </div>
 
           <div>
-            <label for="password" class="mb-2 block text-sm font-medium text-gray-700">Password</label>
+            <label for="password" class="field-label mb-2 block text-sm font-medium">Password</label>
             <input
               id="password"
               v-model="password"
               name="password"
               type="password"
               required
-              class="block w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              class="field-input block px-4 py-3 shadow-sm transition"
               placeholder="Inserisci la password"
             >
           </div>
 
           <div v-if="isRegistering">
-            <label for="confirm-password" class="mb-2 block text-sm font-medium text-gray-700">
+            <label for="confirm-password" class="field-label mb-2 block text-sm font-medium">
               Conferma password
             </label>
             <input
@@ -141,7 +141,7 @@ const toggleMode = () => {
               name="confirm-password"
               type="password"
               required
-              class="block w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              class="field-input block px-4 py-3 shadow-sm transition"
               placeholder="Ripeti la password"
             >
           </div>
@@ -149,23 +149,23 @@ const toggleMode = () => {
 
         <div
           v-if="error"
-          class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          class="error-card rounded-2xl px-4 py-3 text-sm"
         >
           {{ error }}
         </div>
 
         <button
           type="submit"
-          class="w-full rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700"
+          class="gold-button w-full rounded-xl px-4 py-3 text-sm font-semibold transition"
         >
           {{ isRegistering ? 'Crea account' : 'Accedi' }}
         </button>
 
-        <div class="text-center text-sm text-gray-600">
+        <div class="gold-copy text-center text-sm">
           <button
             type="button"
             @click="toggleMode"
-            class="font-semibold text-indigo-600 transition hover:text-indigo-500"
+            class="text-button font-semibold transition"
           >
             {{ isRegistering ? 'Hai gia un account? Accedi' : 'Non hai ancora un account? Registrati' }}
           </button>
