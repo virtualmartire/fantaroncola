@@ -5,11 +5,15 @@ import { useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const captchaEndpoint = `${import.meta.env.VITE_API_BASE || '/api'}/auth/captcha`
 
 const isRegistering = ref(false)
 const username = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+const captchaAnswer = ref('')
+const captchaSvg = ref('')
+const isCaptchaLoading = ref(false)
 const error = ref('')
 
 const title = computed(() => {
@@ -36,9 +40,14 @@ const handleAuth = async () => {
     return
   }
 
+  if (isRegistering.value && !captchaAnswer.value.trim()) {
+    error.value = 'Inserisci il captcha per completare la registrazione'
+    return
+  }
+
   try {
     if (isRegistering.value) {
-      await authStore.register(username.value, password.value)
+      await authStore.register(username.value, password.value, captchaAnswer.value)
     } else {
       await authStore.login(username.value, password.value)
     }
@@ -48,15 +57,61 @@ const handleAuth = async () => {
     }
   } catch (err) {
     error.value = err.message
+
+    if (isRegistering.value) {
+      captchaAnswer.value = ''
+
+      try {
+        await refreshCaptcha()
+      } catch {
+        // Keep the original signup error visible if captcha refresh fails.
+      }
+    }
   }
 }
 
-const toggleMode = () => {
+const refreshCaptcha = async () => {
+  if (!isRegistering.value) {
+    return
+  }
+
+  isCaptchaLoading.value = true
+
+  try {
+    const response = await fetch(`${captchaEndpoint}?ts=${Date.now()}`, {
+      cache: 'no-store',
+      credentials: 'include',
+    })
+
+    if (!response.ok) {
+      throw new Error('Impossibile caricare il captcha. Riprova.')
+    }
+
+    captchaSvg.value = await response.text()
+  } catch (err) {
+    captchaSvg.value = ''
+    throw new Error(err.message || 'Impossibile caricare il captcha. Riprova.')
+  } finally {
+    isCaptchaLoading.value = false
+  }
+}
+
+const toggleMode = async () => {
   isRegistering.value = !isRegistering.value
   error.value = ''
   username.value = ''
   password.value = ''
   confirmPassword.value = ''
+  captchaAnswer.value = ''
+  captchaSvg.value = ''
+
+  if (isRegistering.value) {
+    try {
+      await refreshCaptcha()
+    } catch (err) {
+      error.value = err.message
+    }
+  }
 }
 </script>
 
@@ -145,6 +200,51 @@ const toggleMode = () => {
               placeholder="Ripeti la password"
             >
           </div>
+
+          <div v-if="isRegistering" class="space-y-3">
+            <div class="flex items-center justify-between gap-3">
+              <label class="field-label block text-sm font-medium">Captcha</label>
+              <button
+                type="button"
+                @click="refreshCaptcha"
+                :disabled="isCaptchaLoading"
+                class="ghost-button rounded-xl px-3 py-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {{ isCaptchaLoading ? 'Aggiornamento...' : 'Rigenera captcha' }}
+              </button>
+            </div>
+
+            <div
+              class="min-h-[88px] rounded-2xl border border-[rgba(224,191,115,0.16)] bg-[rgba(255,248,227,0.96)] p-3 shadow-inner"
+            >
+              <div
+                v-if="captchaSvg"
+                class="flex min-h-[64px] items-center justify-center overflow-hidden rounded-xl"
+                v-html="captchaSvg"
+              />
+              <div
+                v-else
+                class="flex min-h-[64px] items-center justify-center text-sm text-[#6f6042]"
+              >
+                {{ isCaptchaLoading ? 'Caricamento captcha...' : 'Captcha non disponibile' }}
+              </div>
+            </div>
+
+            <div>
+              <label for="captcha" class="field-label mb-2 block text-sm font-medium">
+                Inserisci i caratteri mostrati
+              </label>
+              <input
+                id="captcha"
+                v-model="captchaAnswer"
+                name="captcha"
+                type="text"
+                required
+                class="field-input block px-4 py-3 shadow-sm transition"
+                placeholder="Scrivi qui il captcha"
+              >
+            </div>
+          </div>
         </div>
 
         <div
@@ -156,7 +256,8 @@ const toggleMode = () => {
 
         <button
           type="submit"
-          class="gold-button w-full rounded-xl px-4 py-3 text-sm font-semibold transition"
+          :disabled="isRegistering && isCaptchaLoading"
+          class="gold-button w-full rounded-xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
         >
           {{ isRegistering ? 'Crea account' : 'Accedi' }}
         </button>

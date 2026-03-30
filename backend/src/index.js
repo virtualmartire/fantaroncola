@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const session = require('express-session');
 const fs = require('fs');
 const path = require('path');
 const app = express();
@@ -7,8 +8,24 @@ const db = require('./config/db');
 const { syncPointsFromCsv } = require('./utils/syncPoints');
 
 // Middleware
+app.set('trust proxy', 1);
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true,
+}));
+app.use(session({
+  name: 'fantaroncola.sid',
+  secret: process.env.SESSION_SECRET || 'fantaroncola-session-secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 1000 * 60 * 30,
+  },
+}));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));

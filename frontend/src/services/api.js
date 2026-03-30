@@ -25,6 +25,7 @@ export const api = {
     const config = {
       method,
       headers,
+      credentials: 'include',
     }
 
     if (body) {

@@ -1,12 +1,32 @@
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const svgCaptcha = require('svg-captcha');
+
+exports.getCaptcha = (req, res) => {
+  const captcha = svgCaptcha.create({
+    size: 5,
+    noise: 3,
+    color: true,
+    background: '#120d09',
+  });
+
+  req.session.captcha = captcha.text.toLowerCase();
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.type('svg').send(captcha.data);
+};
 
 exports.register = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, captcha } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Username e password sono obbligatori' });
+  if (!username || !password || !captcha) {
+    return res.status(400).json({ message: 'Username, password e captcha sono obbligatori' });
+  }
+
+  const expectedCaptcha = req.session?.captcha;
+  if (!expectedCaptcha || captcha.trim().toLowerCase() !== expectedCaptcha) {
+    req.session.captcha = null;
+    return res.status(400).json({ message: 'Captcha non valido. Riprova' });
   }
 
   try {
@@ -30,6 +50,8 @@ exports.register = async (req, res) => {
     const token = jwt.sign({ id: newUser.rows[0].id }, process.env.JWT_SECRET || 'secret', {
       expiresIn: '1d',
     });
+
+    req.session.captcha = null;
 
     res.status(201).json({
       token,

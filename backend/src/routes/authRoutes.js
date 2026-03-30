@@ -3,6 +3,11 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const auth = require('../middleware/auth');
 
+// @route   GET api/auth/captcha
+// @desc    Generate signup captcha
+// @access  Public
+router.get('/captcha', authController.getCaptcha);
+
 // @route   POST api/auth/register
 // @desc    Register user
 // @access  Public
