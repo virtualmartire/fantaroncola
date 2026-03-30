@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useGameStore } from '../stores/game'
 import { useAuthStore } from '../stores/auth'
 
@@ -26,6 +26,11 @@ const handleLockTeam = async () => {
 }
 
 const isSingerSelected = (singerId) => store.userTeam.some((singer) => singer.id === singerId)
+const teamDescription = computed(() => (
+  authStore.user?.is_team_locked
+    ? 'Squadra confermata. Ora puoi seguirne l\'andamento e tifare i tuoi cantanti in classifica.'
+    : 'Scegli 5 cantanti e ottimizza i tuoi roncoli per restare competitivo.'
+))
 </script>
 
 <template>
@@ -71,7 +76,7 @@ const isSingerSelected = (singerId) => store.userTeam.some((singer) => singer.id
         <div>
           <h1 class="text-2xl font-black tracking-tight text-[#fff0cf]">La tua squadra</h1>
           <p class="gold-copy mt-1 text-sm">
-            Scegli 5 cantanti e ottimizza i tuoi roncoli per restare competitivo.
+            {{ teamDescription }}
           </p>
         </div>
       </div>
@@ -104,6 +109,8 @@ const isSingerSelected = (singerId) => store.userTeam.some((singer) => singer.id
             >
           </div>
           <div class="text-center text-lg font-bold text-[#fff0cf]">{{ singer.name }}</div>
+          <div class="mt-1 text-center text-sm font-semibold text-[#ffe09a]">{{ singer.song_title }}</div>
+          <div class="gold-muted mt-1 text-center text-xs">{{ singer.description }}</div>
           <div class="gold-copy text-center text-sm">{{ singer.cost }} roncoli</div>
         </div>
       </div>
@@ -117,7 +124,7 @@ const isSingerSelected = (singerId) => store.userTeam.some((singer) => singer.id
         </p>
       </div>
 
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <div
           v-for="singer in store.singers"
           :key="singer.id"
@@ -132,6 +139,7 @@ const isSingerSelected = (singerId) => store.userTeam.some((singer) => singer.id
               >
               <div>
                 <div class="font-bold text-[#fff0cf]">{{ singer.name }}</div>
+                <div class="text-xs font-semibold text-[#ffe09a]">{{ singer.song_title }}</div>
                 <div class="gold-muted text-xs">{{ singer.description }}</div>
               </div>
             </div>

@@ -11,11 +11,11 @@ exports.getAllSingers = async (req, res) => {
 };
 
 exports.createSinger = async (req, res) => {
-  const { name, description, cost, image } = req.body;
+  const { name, song_title, description, cost, image } = req.body;
   try {
     const newSinger = await db.query(
-      'INSERT INTO singers (name, description, cost, image, total_score) VALUES ($1, $2, $3, $4, 0) RETURNING *',
-      [name, description, cost, image]
+      'INSERT INTO singers (name, song_title, description, cost, image, total_score) VALUES ($1, $2, $3, $4, $5, 0) RETURNING *',
+      [name, song_title, description, cost, image]
     );
     res.json(newSinger.rows[0]);
   } catch (err) {
@@ -26,11 +26,11 @@ exports.createSinger = async (req, res) => {
 
 exports.updateSinger = async (req, res) => {
   const { id } = req.params;
-  const { name, description, cost, image, total_score } = req.body;
+  const { name, song_title, description, cost, image, total_score } = req.body;
   try {
     const updatedSinger = await db.query(
-      'UPDATE singers SET name = $1, description = $2, cost = $3, image = $4, total_score = $5 WHERE id = $6 RETURNING *',
-      [name, description, cost, image, total_score, id]
+      'UPDATE singers SET name = $1, song_title = $2, description = $3, cost = $4, image = $5, total_score = $6 WHERE id = $7 RETURNING *',
+      [name, song_title, description, cost, image, total_score, id]
     );
     if (updatedSinger.rows.length === 0) {
       return res.status(404).json({ message: 'Cantante non trovato' });

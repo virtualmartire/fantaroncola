@@ -1,50 +1,114 @@
 [
   {
-    "name": "Singer A",
-    "description": "The rising star of pop music.",
+    "seed_key": "slot-1",
+    "name": "Dosi Marco",
+    "song_title": "Questa domenica",
+    "description": "Ballata pop intima e romantica, tra pioggia, silenzi condivisi e un amore che arriva quando meno te lo aspetti.",
     "cost": 20,
-    "image": "/photos/placeholder.jpeg"
+    "image": "/photos/placeholder-singer.svg"
   },
   {
-    "name": "Singer B",
-    "description": "A legendary rock icon.",
+    "seed_key": "slot-2",
+    "name": "Milena, Sara e Silvia",
+    "song_title": "Gloria",
+    "description": "Rilettura intensa e nostalgica di un classico italiano, tra desiderio, attesa e immagini che tengono il cuore spalancato.",
     "cost": 25,
-    "image": "/photos/placeholder.jpeg"
+    "image": "/photos/placeholder-singer.svg"
   },
   {
-    "name": "Singer C",
-    "description": "Soulful jazz vocalist.",
+    "seed_key": "slot-3",
+    "name": "Silvia e Adele",
+    "song_title": "Simili",
+    "description": "Interpretazione intensa e delicata, tra fragilita condivise, tenerezza e il conforto di riconoscersi nell'altra.",
     "cost": 15,
-    "image": "/photos/placeholder.jpeg"
+    "image": "/photos/placeholder-singer.svg"
   },
   {
-    "name": "Singer D",
-    "description": "Chart-topping hip-hop artist.",
+    "seed_key": "slot-4",
+    "name": "Simone Garzon",
+    "song_title": "Rossetto e caffè",
+    "description": "Brano passionale e notturno, tra desiderio, gelosia e un romanticismo viscerale dal sapore dolceamaro.",
     "cost": 30,
-    "image": "/photos/placeholder.jpeg"
+    "image": "/photos/placeholder-singer.svg"
   },
   {
-    "name": "Singer E",
-    "description": "Indie folk singer-songwriter.",
+    "seed_key": "slot-5",
+    "name": "Allegra Gemito",
+    "song_title": "Hometown Glory",
+    "description": "Brano evocativo e urbano, sospeso tra memoria, identita e amore profondo per i luoghi e le persone di casa.",
     "cost": 10,
-    "image": "/photos/placeholder.jpeg"
+    "image": "/photos/placeholder-singer.svg"
   },
   {
-    "name": "Singer F",
-    "description": "Electronic music producer and vocalist.",
+    "seed_key": "slot-6",
+    "name": "Marco Caragiulo",
+    "song_title": "End of beginning",
+    "description": "Brano malinconico e cinematografico, tra nostalgia, cambiamento e il legame profondo con una citta che continua a vivere dentro.",
     "cost": 22,
-    "image": "/photos/placeholder.jpeg"
+    "image": "/photos/placeholder-singer.svg"
   },
   {
-    "name": "Singer G",
-    "description": "Classical opera soprano.",
+    "seed_key": "slot-7",
+    "name": "Daria Lazar",
+    "song_title": "Fallin'",
+    "description": "Interpretazione soul intensa e tormentata, sospesa tra passione, fragilita e i contrasti di un amore che travolge.",
     "cost": 18,
-    "image": "http://localhost:3000/photos/placeholder.jpeg"
+    "image": "/photos/placeholder-singer.svg"
   },
   {
-    "name": "Singer H",
-    "description": "Country music sensation.",
+    "seed_key": "slot-8",
+    "name": "Bezzi Francesco",
+    "song_title": "Il filo rosso",
+    "description": "Brano pop sentimentale e inquieto, tra nostalgia, pioggia, legami invisibili e un amore che continua a tirare verso l'altro.",
     "cost": 28,
-    "image": "http://localhost:3000/photos/placeholder.jpeg"
+    "image": "/photos/placeholder-singer.svg"
+  },
+  {
+    "seed_key": "slot-9",
+    "name": "Donato Rendina",
+    "song_title": "Poesie clandestine",
+    "description": "Duetto intenso e metropolitano, tra malinconia, passione viscerale e un amore complicato che continua a chiedere casa.",
+    "cost": 20,
+    "image": "/photos/placeholder-singer.svg"
+  },
+  {
+    "seed_key": "slot-10",
+    "name": "Riccardo e Danilo",
+    "song_title": "Pronto come va",
+    "description": "Brano pop vivace e nostalgico, tra telefonate mancate, profumi che restano e il desiderio ostinato di ritrovarsi.",
+    "cost": 20,
+    "image": "/photos/placeholder-singer.svg"
+  },
+  {
+    "seed_key": "slot-11",
+    "name": "Tecla Ferrari",
+    "song_title": "Volevo essere un duro",
+    "description": "Brano ironico e sensibile, tra fragilita quotidiane, paure da attraversare e il coraggio di accettarsi per come si e.",
+    "cost": 20,
+    "image": "/photos/placeholder-singer.svg"
+  },
+  {
+    "seed_key": "slot-12",
+    "name": "Ex ragnetti",
+    "song_title": "Dove si balla",
+    "description": "Brano dance ironico e liberatorio, tra rottami, nostalgia urbana e il bisogno vitale di ballare per restare a galla.",
+    "cost": 20,
+    "image": "/photos/placeholder-singer.svg"
+  },
+  {
+    "seed_key": "slot-13",
+    "name": "Simone Floris",
+    "song_title": "Una canzone d'amore",
+    "description": "Ballata pop romantica e disarmata, tra parole che mancano, sogni condivisi e il desiderio di trasformare i sentimenti in musica.",
+    "cost": 20,
+    "image": "/photos/placeholder-singer.svg"
+  },
+  {
+    "seed_key": "slot-14",
+    "name": "Melissa Lazar",
+    "song_title": "Oltre l'orizzonte",
+    "description": "Brano luminoso e avventuroso, tra desiderio di liberta, richiamo del mare e ricerca coraggiosa del proprio posto nel mondo.",
+    "cost": 20,
+    "image": "/photos/placeholder-singer.svg"
   }
 ]

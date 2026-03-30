@@ -5,6 +5,38 @@ const POINTS_SYNC_TTL_MS = 3000;
 let lastPointsSyncAt = 0;
 let lastPointsMtimeMs = null;
 
+const parseCsvLine = (line) => {
+  const values = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i += 1) {
+    const char = line[i];
+    const nextChar = line[i + 1];
+
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        current += '"';
+        i += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (char === ',' && !inQuotes) {
+      values.push(current.trim());
+      current = '';
+      continue;
+    }
+
+    current += char;
+  }
+
+  values.push(current.trim());
+  return values;
+};
+
 const syncPointsFromCsv = async (db) => {
   const pointsPath = path.join(__dirname, '../../data/points.csv');
   const now = Date.now();
@@ -25,7 +57,7 @@ const syncPointsFromCsv = async (db) => {
     const line = lines[i].trim();
     if (!line) continue;
 
-    const parts = line.split(',').map((value) => value.trim());
+    const parts = parseCsvLine(line);
     if (i === 0 && parts[0].toLowerCase() === 'name') {
       continue;
     }

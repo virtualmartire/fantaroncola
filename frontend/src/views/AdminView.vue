@@ -3,9 +3,9 @@ import { ref, onMounted } from 'vue'
 import { api } from '../services/api'
 
 const singers = ref([])
-const newSinger = ref({ name: '', description: '', cost: 0, image: '' })
+const newSinger = ref({ name: '', song_title: '', description: '', cost: 0, image: '' })
 const isEditing = ref(null)
-const editForm = ref({ name: '', description: '', cost: 0, image: '', total_score: 0 })
+const editForm = ref({ name: '', song_title: '', description: '', cost: 0, image: '', total_score: 0 })
 
 const fetchSingers = async () => {
   try {
@@ -18,7 +18,7 @@ const fetchSingers = async () => {
 const addSinger = async () => {
   try {
     await api.post('/singers', newSinger.value)
-    newSinger.value = { name: '', description: '', cost: 0, image: '' }
+    newSinger.value = { name: '', song_title: '', description: '', cost: 0, image: '' }
     fetchSingers()
   } catch (error) {
     alert(error.message)
@@ -45,7 +45,7 @@ const startEdit = (singer) => {
 
 const cancelEdit = () => {
   isEditing.value = null
-  editForm.value = { name: '', description: '', cost: 0, image: '', total_score: 0 }
+  editForm.value = { name: '', song_title: '', description: '', cost: 0, image: '', total_score: 0 }
 }
 
 const saveSinger = async () => {
@@ -73,13 +73,17 @@ onMounted(fetchSingers)
 
     <div class="surface-card rounded-2xl p-6">
       <h2 class="mb-4 text-xl font-bold text-[#fff0cf]">Aggiungi un cantante</h2>
-      <form @submit.prevent="addSinger" class="grid grid-cols-1 items-end gap-4 sm:grid-cols-4">
+      <form @submit.prevent="addSinger" class="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <div>
           <label class="field-label block text-sm font-medium">Nome</label>
           <input v-model="newSinger.name" type="text" required class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
         </div>
         <div>
-          <label class="field-label block text-sm font-medium">Descrizione</label>
+          <label class="field-label block text-sm font-medium">Titolo canzone</label>
+          <input v-model="newSinger.song_title" type="text" required class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
+        </div>
+        <div>
+          <label class="field-label block text-sm font-medium">Testo descrittivo</label>
           <input v-model="newSinger.description" type="text" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
         </div>
         <div>
@@ -100,13 +104,17 @@ onMounted(fetchSingers)
       <ul class="divide-y divide-[rgba(224,191,115,0.12)]">
         <li v-for="singer in singers" :key="singer.id" class="px-4 py-4 sm:px-6">
           <div v-if="isEditing === singer.id" class="space-y-4">
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div>
                 <label class="field-label block text-sm font-medium">Nome</label>
                 <input v-model="editForm.name" type="text" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
               </div>
               <div>
-                <label class="field-label block text-sm font-medium">Descrizione</label>
+                <label class="field-label block text-sm font-medium">Titolo canzone</label>
+                <input v-model="editForm.song_title" type="text" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
+              </div>
+              <div>
+                <label class="field-label block text-sm font-medium">Testo descrittivo</label>
                 <input v-model="editForm.description" type="text" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
               </div>
               <div>
@@ -139,6 +147,7 @@ onMounted(fetchSingers)
               </div>
               <div class="ml-4">
                 <div class="truncate text-sm font-medium text-[#ffe09a]">{{ singer.name }}</div>
+                <div class="text-sm font-semibold text-[#fff0cf]">{{ singer.song_title }}</div>
                 <div class="gold-copy text-sm">{{ singer.description }}</div>
                 <div class="gold-muted text-sm">
                   Roncoli: {{ singer.cost }} | Punteggio: {{ singer.total_score }}

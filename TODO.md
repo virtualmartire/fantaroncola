@@ -3,7 +3,10 @@
 [x] grafica: palette elegante (sull'oro), tema scuro
 [x] budget e costi in "roncoli"
 [x] captcha
-[] dati dei cantanti disponibili
+[x] dati dei cantanti disponibili
+[] finire lista cantanti (rileggendo tutto)
+[] costi dei cantanti
+[] foto dei cantanti
 [] regolamento
 [] deploy su fantaroncola.it
 
