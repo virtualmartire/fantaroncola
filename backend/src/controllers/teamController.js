@@ -11,7 +11,7 @@ exports.getTeam = async (req, res) => {
     res.json(result.rows);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Errore del server' });
   }
 };
 
@@ -22,26 +22,26 @@ exports.addSinger = async (req, res) => {
     // Check if locked
     const userCheck = await db.query('SELECT is_team_locked FROM users WHERE id = $1', [req.user.id]);
     if (userCheck.rows[0].is_team_locked) {
-        return res.status(400).json({ message: 'Team is locked' });
+        return res.status(400).json({ message: 'La squadra e bloccata' });
     }
 
     // Check if singer exists
     const singerCheck = await db.query('SELECT * FROM singers WHERE id = $1', [singerId]);
     if (singerCheck.rows.length === 0) {
-        return res.status(404).json({ message: 'Singer not found' });
+        return res.status(404).json({ message: 'Cantante non trovato' });
     }
     const singer = singerCheck.rows[0];
 
     // Check current team size
     const teamCheck = await db.query('SELECT * FROM teams WHERE user_id = $1', [req.user.id]);
     if (teamCheck.rows.length >= 5) {
-        return res.status(400).json({ message: 'Team is full' });
+        return res.status(400).json({ message: 'La squadra e al completo' });
     }
     
     // Check if already in team
     const inTeam = teamCheck.rows.some(row => row.singer_id === singerId);
     if (inTeam) {
-        return res.status(400).json({ message: 'Singer already in team' });
+        return res.status(400).json({ message: 'Questo cantante e gia nella tua squadra' });
     }
 
     // Check budget (optional, but good)
@@ -56,7 +56,7 @@ exports.addSinger = async (req, res) => {
     const currentCost = parseInt(teamCostResult.rows[0].total_cost || 0);
     
     if (currentCost + singer.cost > 100) { // Hardcoded 100 budget
-        return res.status(400).json({ message: 'Budget exceeded' });
+        return res.status(400).json({ message: 'Hai superato il budget disponibile' });
     }
 
     await db.query('INSERT INTO teams (user_id, singer_id) VALUES ($1, $2)', [req.user.id, singerId]);
@@ -73,7 +73,7 @@ exports.addSinger = async (req, res) => {
 
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Errore del server' });
   }
 };
 
@@ -84,7 +84,7 @@ exports.removeSinger = async (req, res) => {
     // Check if locked
     const userCheck = await db.query('SELECT is_team_locked FROM users WHERE id = $1', [req.user.id]);
     if (userCheck.rows[0].is_team_locked) {
-        return res.status(400).json({ message: 'Team is locked' });
+        return res.status(400).json({ message: 'La squadra e bloccata' });
     }
 
     await db.query('DELETE FROM teams WHERE user_id = $1 AND singer_id = $2', [req.user.id, singerId]);
@@ -98,16 +98,16 @@ exports.removeSinger = async (req, res) => {
     res.json(updatedTeam.rows);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Errore del server' });
   }
 };
 
 exports.lockTeam = async (req, res) => {
   try {
     await db.query('UPDATE users SET is_team_locked = TRUE WHERE id = $1', [req.user.id]);
-    res.json({ message: 'Team locked successfully', is_team_locked: true });
+    res.json({ message: 'Squadra bloccata con successo', is_team_locked: true });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Errore del server' });
   }
 };

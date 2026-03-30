@@ -16,55 +16,56 @@ export const useGameStore = defineStore('game', () => {
 
   async function fetchSingers() {
     try {
-        const data = await api.get('/singers');
-        singers.value = data;
+      const data = await api.get('/singers')
+      singers.value = data
     } catch (error) {
-        console.error('Failed to fetch singers:', error);
+      console.error('Errore nel caricamento dei cantanti:', error)
     }
   }
 
   async function fetchTeam() {
-      if (!localStorage.getItem('token')) {
-          userTeam.value = [];
-          return;
-      }
-      try {
-          const data = await api.get('/team');
-          userTeam.value = data;
-      } catch (error) {
-          console.error('Failed to fetch team:', error);
-          userTeam.value = [];
-      }
+    if (!localStorage.getItem('token')) {
+      userTeam.value = []
+      return
+    }
+
+    try {
+      const data = await api.get('/team')
+      userTeam.value = data
+    } catch (error) {
+      console.error('Errore nel caricamento della squadra:', error)
+      userTeam.value = []
+    }
   }
 
   async function addSinger(singer) {
     if (userTeam.value.find(s => s.id === singer.id)) return
     if (userTeam.value.length >= 5) return
     if (currentBudget.value < singer.cost) return
-    
+
     try {
-        const updatedTeam = await api.post('/team', { singerId: singer.id });
-        userTeam.value = updatedTeam;
+      const updatedTeam = await api.post('/team', { singerId: singer.id })
+      userTeam.value = updatedTeam
     } catch (error) {
-        console.error('Failed to add singer:', error);
-        alert(error.message);
+      console.error('Errore durante l\'aggiunta del cantante:', error)
+      alert(error.message)
     }
   }
 
   async function removeSinger(singerId) {
     try {
-        const updatedTeam = await api.request(`/team/${singerId}`, 'DELETE');
-        userTeam.value = updatedTeam;
+      const updatedTeam = await api.request(`/team/${singerId}`, 'DELETE')
+      userTeam.value = updatedTeam
     } catch (error) {
-        console.error('Failed to remove singer:', error);
+      console.error('Errore durante la rimozione del cantante:', error)
     }
   }
 
   async function lockTeam() {
     try {
-        await api.post('/team/lock', {});
+      await api.post('/team/lock', {})
     } catch (error) {
-        throw error;
+      throw error
     }
   }
 

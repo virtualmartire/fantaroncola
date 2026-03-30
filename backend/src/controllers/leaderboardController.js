@@ -17,6 +17,6 @@ exports.getLeaderboard = async (req, res) => {
     res.json(leaderboard.rows);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Errore del server' });
   }
 };

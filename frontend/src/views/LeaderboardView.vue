@@ -6,33 +6,44 @@ const leaderboard = ref([])
 
 const fetchLeaderboard = async () => {
   try {
-    const data = await api.get('/leaderboard');
+    const data = await api.get('/leaderboard')
     leaderboard.value = data.map((entry, index) => ({
       rank: index + 1,
       user: entry.username,
-      points: parseInt(entry.total_score) // Ensure it's a number
-    }));
+      points: parseInt(entry.total_score, 10),
+    }))
   } catch (error) {
-    console.error('Failed to fetch leaderboard:', error);
+    console.error('Errore nel caricamento della classifica:', error)
   }
 }
 
 onMounted(() => {
-  fetchLeaderboard();
+  fetchLeaderboard()
 })
 </script>
 
 <template>
-  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+  <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
     <div class="px-4 py-5 sm:px-6">
-      <h3 class="text-lg leading-6 font-medium text-gray-900">Leaderboard</h3>
-      <p class="mt-1 max-w-2xl text-sm text-gray-500">Current standings for Roncola d'Oro.</p>
+      <h1 class="text-2xl font-black tracking-tight text-gray-900">Classifica</h1>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">
+        Segui l'andamento del fantaconcorso e scopri chi sta dominando la gara.
+      </p>
     </div>
-    <div class="border-t border-gray-200">
-      <div v-for="entry in leaderboard" :key="entry.rank" class="bg-gray-50 px-4 py-5 grid grid-cols-3 gap-4 sm:px-6 even:bg-white items-center">
-        <div class="text-sm font-medium text-gray-500">#{{ entry.rank }}</div>
-        <div class="text-sm text-gray-900 font-bold">{{ entry.user }}</div>
-        <div class="text-sm text-gray-900 text-right">{{ entry.points }} pts</div>
+
+    <div v-if="leaderboard.length === 0" class="border-t border-gray-200 px-4 py-10 text-center text-sm text-gray-500">
+      La classifica si popolera non appena saranno disponibili i primi punteggi.
+    </div>
+
+    <div v-else class="border-t border-gray-200">
+      <div
+        v-for="entry in leaderboard"
+        :key="entry.rank"
+        class="grid grid-cols-3 items-center gap-4 bg-gray-50 px-4 py-5 even:bg-white sm:px-6"
+      >
+        <div class="text-sm font-semibold text-gray-500">#{{ entry.rank }}</div>
+        <div class="text-sm font-bold text-gray-900">{{ entry.user }}</div>
+        <div class="text-right text-sm text-gray-900">{{ entry.points }} punti</div>
       </div>
     </div>
   </div>

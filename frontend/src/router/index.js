@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import LandingView from '../views/LandingView.vue'
 import HomeView from '../views/HomeView.vue'
 import { useAuthStore } from '../stores/auth'
 
@@ -8,7 +9,13 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
+      component: LandingView,
+    },
+    {
+      path: '/accedi',
+      name: 'auth',
       component: HomeView,
+      meta: { requiresGuest: true },
     },
     {
       path: '/team',
@@ -31,16 +38,26 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to) => {
   const authStore = useAuthStore()
-  
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/') // Redirect to home (which has login)
-  } else if (to.meta.requiresAdmin && !authStore.user?.is_admin) {
-    next('/')
-  } else {
-    next()
+
+  if (authStore.token && !authStore.user) {
+    await authStore.fetchUser()
   }
+
+  if (to.meta.requiresGuest && authStore.isAuthenticated) {
+    return { name: 'team' }
+  }
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    return { name: 'auth' }
+  }
+
+  if (to.meta.requiresAdmin && !authStore.user?.is_admin) {
+    return { name: 'home' }
+  }
+
+  return true
 })
 
 export default router

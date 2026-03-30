@@ -6,7 +6,7 @@ exports.getAllSingers = async (req, res) => {
     res.json(result.rows);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Errore del server' });
   }
 };
 
@@ -20,7 +20,7 @@ exports.createSinger = async (req, res) => {
     res.json(newSinger.rows[0]);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Errore del server' });
   }
 };
 
@@ -33,12 +33,12 @@ exports.updateSinger = async (req, res) => {
       [name, description, cost, image, total_score, id]
     );
     if (updatedSinger.rows.length === 0) {
-      return res.status(404).json({ message: 'Singer not found' });
+      return res.status(404).json({ message: 'Cantante non trovato' });
     }
     res.json(updatedSinger.rows[0]);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Errore del server' });
   }
 };
 
@@ -46,9 +46,9 @@ exports.deleteSinger = async (req, res) => {
   const { id } = req.params;
   try {
     await db.query('DELETE FROM singers WHERE id = $1', [id]);
-    res.json({ message: 'Singer deleted' });
+    res.json({ message: 'Cantante eliminato' });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Errore del server' });
   }
 };

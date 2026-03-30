@@ -6,14 +6,14 @@ exports.register = async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ message: 'Username and password are required' });
+    return res.status(400).json({ message: 'Username e password sono obbligatori' });
   }
 
   try {
     // Check if user exists
     const userCheck = await db.query('SELECT * FROM users WHERE username = $1', [username]);
     if (userCheck.rows.length > 0) {
-      return res.status(400).json({ message: 'Username already exists' });
+      return res.status(400).json({ message: 'Questo username e gia in uso' });
     }
 
     // Hash password
@@ -42,7 +42,7 @@ exports.register = async (req, res) => {
     });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Errore del server' });
   }
 };
 
@@ -53,13 +53,13 @@ exports.login = async (req, res) => {
     // Check user
     const user = await db.query('SELECT * FROM users WHERE username = $1', [username]);
     if (user.rows.length === 0) {
-      return res.status(400).json({ message: 'Invalid Credentials' });
+      return res.status(400).json({ message: 'Credenziali non valide' });
     }
 
     // Check password
     const isMatch = await bcrypt.compare(password, user.rows[0].password_hash);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid Credentials' });
+      return res.status(400).json({ message: 'Credenziali non valide' });
     }
 
     // Return token
@@ -78,7 +78,7 @@ exports.login = async (req, res) => {
     });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Errore del server' });
   }
 };
 
@@ -88,6 +88,6 @@ exports.getMe = async (req, res) => {
     res.json(user.rows[0]);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Errore del server' });
   }
 };

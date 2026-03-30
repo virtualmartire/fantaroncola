@@ -1,54 +1,79 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import { useAuthStore } from './stores/auth';
-import { onMounted } from 'vue';
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { useAuthStore } from './stores/auth'
 
-const authStore = useAuthStore();
+const authStore = useAuthStore()
+const router = useRouter()
 
-onMounted(() => {
-  authStore.fetchUser();
-});
+const handleLogout = () => {
+  authStore.logout()
+  router.push('/')
+}
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 text-gray-900">
-    <header class="bg-white shadow">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex">
-            <div class="flex-shrink-0 flex items-center">
-              <RouterLink to="/" class="font-bold text-xl text-indigo-600">FantaRoncola</RouterLink>
-            </div>
-            <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <RouterLink to="/" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Home
-              </RouterLink>
-              <RouterLink v-if="authStore.isAuthenticated" to="/team" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                My Team
-              </RouterLink>
-              <RouterLink v-if="authStore.isAuthenticated" to="/leaderboard" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Leaderboard
-              </RouterLink>
-              <RouterLink v-if="authStore.user?.is_admin" to="/admin" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Admin
-              </RouterLink>
-            </div>
-          </div>
-          <div class="hidden sm:ml-6 sm:flex sm:items-center">
-            <div v-if="authStore.isAuthenticated" class="flex items-center space-x-4">
-              <span class="text-sm text-gray-700">Welcome, {{ authStore.user?.username }}</span>
-              <button @click="authStore.logout" class="text-sm text-gray-500 hover:text-gray-700">Logout</button>
-            </div>
-            <div v-else class="flex space-x-4">
-              <!-- Auth happens on Home now -->
-            </div>
-          </div>
+  <div class="min-h-screen bg-slate-50 text-gray-900">
+    <header class="border-b border-slate-200 bg-white/90 shadow-sm backdrop-blur">
+      <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-8">
+          <RouterLink to="/" class="text-xl font-black tracking-tight text-indigo-600">
+            FantaRoncola
+          </RouterLink>
+
+          <nav class="hidden items-center gap-6 sm:flex">
+            <RouterLink to="/" class="text-sm font-medium text-gray-600 transition hover:text-indigo-600">
+              Inizio
+            </RouterLink>
+            <RouterLink
+              v-if="authStore.isAuthenticated"
+              to="/team"
+              class="text-sm font-medium text-gray-600 transition hover:text-indigo-600"
+            >
+              La mia squadra
+            </RouterLink>
+            <RouterLink
+              v-if="authStore.isAuthenticated"
+              to="/leaderboard"
+              class="text-sm font-medium text-gray-600 transition hover:text-indigo-600"
+            >
+              Classifica
+            </RouterLink>
+            <RouterLink
+              v-if="authStore.user?.is_admin"
+              to="/admin"
+              class="text-sm font-medium text-gray-600 transition hover:text-indigo-600"
+            >
+              Admin
+            </RouterLink>
+          </nav>
+        </div>
+
+        <div class="hidden items-center gap-4 sm:flex">
+          <template v-if="authStore.isAuthenticated">
+            <span class="text-sm text-gray-700">
+              Benvenuto, <span class="font-semibold">{{ authStore.user?.username }}</span>
+            </span>
+            <button
+              @click="handleLogout"
+              class="text-sm font-medium text-gray-500 transition hover:text-gray-800"
+            >
+              Esci
+            </button>
+          </template>
+
+          <RouterLink
+            v-else
+            to="/accedi"
+            class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
+          >
+            Accedi o registrati
+          </RouterLink>
         </div>
       </div>
     </header>
 
     <main>
-      <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <RouterView />
       </div>
     </main>
