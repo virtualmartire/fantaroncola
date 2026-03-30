@@ -2,6 +2,17 @@ const express = require('express');
 const router = express.Router();
 const teamController = require('../controllers/teamController');
 const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
+
+// @route   GET api/team/settings
+// @desc    Get global team editing settings
+// @access  Private
+router.get('/settings', auth, teamController.getTeamSettings);
+
+// @route   PUT api/team/settings
+// @desc    Update global team editing settings
+// @access  Private/Admin
+router.put('/settings', auth, admin, teamController.updateTeamSettings);
 
 // @route   GET api/team
 // @desc    Get user team

@@ -1,64 +1,65 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { api } from '../services/api'
 
-const singers = ref([])
-const newSinger = ref({ name: '', song_title: '', description: '', cost: 0, image: '' })
-const isEditing = ref(null)
-const editForm = ref({ name: '', song_title: '', description: '', cost: 0, image: '', total_score: 0 })
+const allowLockedTeamEdits = ref(false)
+const isLoading = ref(true)
+const isSaving = ref(false)
 
-const fetchSingers = async () => {
+const fetchTeamSettings = async () => {
+  isLoading.value = true
+
   try {
-    singers.value = await api.get('/singers')
+    const data = await api.get('/team/settings')
+    allowLockedTeamEdits.value = Boolean(data?.allow_locked_team_edits)
   } catch (error) {
-    console.error(error)
+    console.error('Errore nel caricamento delle impostazioni squadra:', error)
+  } finally {
+    isLoading.value = false
   }
 }
 
-const addSinger = async () => {
-  try {
-    await api.post('/singers', newSinger.value)
-    newSinger.value = { name: '', song_title: '', description: '', cost: 0, image: '' }
-    fetchSingers()
-  } catch (error) {
-    alert(error.message)
-  }
-}
-
-const deleteSinger = async (id) => {
-  if (!confirm('Vuoi davvero eliminare questo cantante?')) {
-    return
-  }
+const toggleLockedTeamEditability = async () => {
+  isSaving.value = true
 
   try {
-    await api.request(`/singers/${id}`, 'DELETE')
-    fetchSingers()
+    const data = await api.request('/team/settings', 'PUT', {
+      allowLockedTeamEdits: !allowLockedTeamEdits.value,
+    })
+
+    allowLockedTeamEdits.value = Boolean(data?.allow_locked_team_edits)
   } catch (error) {
     alert(error.message)
+  } finally {
+    isSaving.value = false
   }
 }
 
-const startEdit = (singer) => {
-  isEditing.value = singer.id
-  editForm.value = { ...singer }
-}
+const statusLabel = computed(() => (
+  allowLockedTeamEdits.value ? 'Modifiche abilitate' : 'Modifiche bloccate'
+))
 
-const cancelEdit = () => {
-  isEditing.value = null
-  editForm.value = { name: '', song_title: '', description: '', cost: 0, image: '', total_score: 0 }
-}
+const statusDescription = computed(() => (
+  allowLockedTeamEdits.value
+    ? 'Gli utenti possono ancora modificare anche le squadre gia confermate.'
+    : 'Le squadre confermate dagli utenti restano non modificabili.'
+))
 
-const saveSinger = async () => {
-  try {
-    await api.request(`/singers/${isEditing.value}`, 'PUT', editForm.value)
-    isEditing.value = null
-    fetchSingers()
-  } catch (error) {
-    alert(error.message)
+const buttonLabel = computed(() => {
+  if (isLoading.value) {
+    return 'Caricamento...'
   }
-}
 
-onMounted(fetchSingers)
+  if (isSaving.value) {
+    return 'Salvataggio...'
+  }
+
+  return allowLockedTeamEdits.value
+    ? 'Blocca di nuovo le squadre confermate'
+    : 'Rendi modificabili le squadre confermate'
+})
+
+onMounted(fetchTeamSettings)
 </script>
 
 <template>
@@ -67,104 +68,32 @@ onMounted(fetchSingers)
       <p class="gold-kicker text-sm font-semibold uppercase">Backstage</p>
       <h1 class="mt-2 text-3xl font-black tracking-tight text-[#fff0cf]">Pannello admin</h1>
       <p class="gold-copy mt-2 text-sm">
-        Gestisci il cast del fantaconcorso, aggiorna i dati dei cantanti e controlla i punteggi.
+        Controlla se le squadre gia confermate dagli utenti possono ancora essere modificate.
       </p>
     </div>
 
-    <div class="surface-card rounded-2xl p-6">
-      <h2 class="mb-4 text-xl font-bold text-[#fff0cf]">Aggiungi un cantante</h2>
-      <form @submit.prevent="addSinger" class="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <div>
-          <label class="field-label block text-sm font-medium">Nome</label>
-          <input v-model="newSinger.name" type="text" required class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
+    <div class="surface-card rounded-2xl p-6 sm:p-8">
+      <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div class="max-w-2xl">
+          <div class="status-badge inline-flex rounded-full px-4 py-2 text-sm font-semibold">
+            {{ statusLabel }}
+          </div>
+          <h2 class="mt-4 text-2xl font-black tracking-tight text-[#fff0cf]">
+            Modifiche alle squadre bloccate
+          </h2>
+          <p class="gold-copy mt-3 text-sm leading-6">
+            {{ statusDescription }}
+          </p>
         </div>
-        <div>
-          <label class="field-label block text-sm font-medium">Titolo canzone</label>
-          <input v-model="newSinger.song_title" type="text" required class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
-        </div>
-        <div>
-          <label class="field-label block text-sm font-medium">Testo descrittivo</label>
-          <input v-model="newSinger.description" type="text" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
-        </div>
-        <div>
-          <label class="field-label block text-sm font-medium">Roncoli</label>
-          <input v-model.number="newSinger.cost" type="number" required class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
-        </div>
-        <div>
-          <label class="field-label block text-sm font-medium">URL immagine</label>
-          <input v-model="newSinger.image" type="text" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
-        </div>
-        <button type="submit" class="gold-button rounded-xl px-4 py-2 font-semibold transition">
-          Aggiungi
+
+        <button
+          @click="toggleLockedTeamEditability"
+          :disabled="isLoading || isSaving"
+          class="gold-button rounded-xl px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {{ buttonLabel }}
         </button>
-      </form>
-    </div>
-
-    <div class="surface-card overflow-hidden rounded-2xl">
-      <ul class="divide-y divide-[rgba(224,191,115,0.12)]">
-        <li v-for="singer in singers" :key="singer.id" class="px-4 py-4 sm:px-6">
-          <div v-if="isEditing === singer.id" class="space-y-4">
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <div>
-                <label class="field-label block text-sm font-medium">Nome</label>
-                <input v-model="editForm.name" type="text" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
-              </div>
-              <div>
-                <label class="field-label block text-sm font-medium">Titolo canzone</label>
-                <input v-model="editForm.song_title" type="text" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
-              </div>
-              <div>
-                <label class="field-label block text-sm font-medium">Testo descrittivo</label>
-                <input v-model="editForm.description" type="text" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
-              </div>
-              <div>
-                <label class="field-label block text-sm font-medium">Roncoli</label>
-                <input v-model.number="editForm.cost" type="number" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
-              </div>
-              <div>
-                <label class="field-label block text-sm font-medium">URL immagine</label>
-                <input v-model="editForm.image" type="text" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
-              </div>
-              <div>
-                <label class="field-label block text-sm font-medium">Punteggio totale</label>
-                <input v-model.number="editForm.total_score" type="number" class="field-input mt-1 block p-2 shadow-sm sm:text-sm">
-              </div>
-            </div>
-            <div class="flex justify-end gap-2">
-              <button @click="saveSinger" class="gold-button rounded-xl px-3 py-2 font-semibold transition">
-                Salva
-              </button>
-              <button @click="cancelEdit" class="ghost-button rounded-xl px-3 py-2 font-semibold transition">
-                Annulla
-              </button>
-            </div>
-          </div>
-
-          <div v-else class="flex items-center justify-between gap-4">
-            <div class="flex items-center">
-              <div class="h-10 w-10 flex-shrink-0">
-                <img class="h-10 w-10 rounded-full object-cover" :src="singer.image" :alt="singer.name">
-              </div>
-              <div class="ml-4">
-                <div class="truncate text-sm font-medium text-[#ffe09a]">{{ singer.name }}</div>
-                <div class="text-sm font-semibold text-[#fff0cf]">{{ singer.song_title }}</div>
-                <div class="gold-copy text-sm">{{ singer.description }}</div>
-                <div class="gold-muted text-sm">
-                  Roncoli: {{ singer.cost }} | Punteggio: {{ singer.total_score }}
-                </div>
-              </div>
-            </div>
-            <div class="flex gap-2">
-              <button @click="startEdit(singer)" class="text-button text-sm font-medium transition">
-                Modifica
-              </button>
-              <button @click="deleteSinger(singer.id)" class="text-sm font-medium text-[#f2a8a3] transition hover:text-[#ffd0cc]">
-                Elimina
-              </button>
-            </div>
-          </div>
-        </li>
-      </ul>
+      </div>
     </div>
   </div>
 </template>

@@ -87,6 +87,23 @@ const initDb = async () => {
       await db.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_team_locked BOOLEAN DEFAULT FALSE');
   } catch (e) { console.log('Column is_team_locked might already exist'); }
 
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS app_settings (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      allow_locked_team_edits BOOLEAN NOT NULL DEFAULT TRUE
+    );
+  `);
+
+  await db.query(
+    'ALTER TABLE app_settings ALTER COLUMN allow_locked_team_edits SET DEFAULT TRUE'
+  );
+
+  await db.query(
+    `INSERT INTO app_settings (id, allow_locked_team_edits)
+     VALUES (1, TRUE)
+     ON CONFLICT (id) DO NOTHING`
+  );
+
   await ensureAdminUser();
 
   await db.query(`

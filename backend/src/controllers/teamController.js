@@ -1,5 +1,66 @@
 const db = require('../config/db');
 
+const getTeamAccessState = async (userId) => {
+  const result = await db.query(
+    `SELECT
+       u.is_team_locked,
+       COALESCE(s.allow_locked_team_edits, TRUE) AS allow_locked_team_edits
+     FROM users u
+     LEFT JOIN app_settings s ON s.id = 1
+     WHERE u.id = $1`,
+    [userId]
+  );
+
+  return result.rows[0];
+};
+
+const getCurrentTeamSettings = async () => {
+  const result = await db.query(
+    'SELECT COALESCE(allow_locked_team_edits, TRUE) AS allow_locked_team_edits FROM app_settings WHERE id = 1'
+  );
+
+  return result.rows[0] || { allow_locked_team_edits: true };
+};
+
+exports.getTeamSettings = async (req, res) => {
+  try {
+    const settings = await getCurrentTeamSettings();
+    res.json(settings);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: 'Errore del server' });
+  }
+};
+
+exports.updateTeamSettings = async (req, res) => {
+  const { allowLockedTeamEdits } = req.body;
+
+  if (typeof allowLockedTeamEdits !== 'boolean') {
+    return res.status(400).json({ message: 'Impostazione non valida' });
+  }
+
+  try {
+    const result = await db.query(
+      `INSERT INTO app_settings (id, allow_locked_team_edits)
+       VALUES (1, $1)
+       ON CONFLICT (id)
+       DO UPDATE SET allow_locked_team_edits = EXCLUDED.allow_locked_team_edits
+       RETURNING allow_locked_team_edits`,
+      [allowLockedTeamEdits]
+    );
+
+    res.json({
+      message: allowLockedTeamEdits
+        ? 'Le squadre bloccate sono ora modificabili'
+        : 'Le squadre bloccate non sono piu modificabili',
+      allow_locked_team_edits: result.rows[0].allow_locked_team_edits,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: 'Errore del server' });
+  }
+};
+
 exports.getTeam = async (req, res) => {
   try {
     const result = await db.query(
@@ -19,9 +80,12 @@ exports.addSinger = async (req, res) => {
   const { singerId } = req.body;
 
   try {
-    // Check if locked
-    const userCheck = await db.query('SELECT is_team_locked FROM users WHERE id = $1', [req.user.id]);
-    if (userCheck.rows[0].is_team_locked) {
+    const teamAccessState = await getTeamAccessState(req.user.id);
+    if (!teamAccessState) {
+        return res.status(404).json({ message: 'Utente non trovato' });
+    }
+
+    if (teamAccessState.is_team_locked && !teamAccessState.allow_locked_team_edits) {
         return res.status(400).json({ message: 'La squadra e bloccata' });
     }
 
@@ -81,9 +145,12 @@ exports.removeSinger = async (req, res) => {
   const { singerId } = req.params;
 
   try {
-    // Check if locked
-    const userCheck = await db.query('SELECT is_team_locked FROM users WHERE id = $1', [req.user.id]);
-    if (userCheck.rows[0].is_team_locked) {
+    const teamAccessState = await getTeamAccessState(req.user.id);
+    if (!teamAccessState) {
+        return res.status(404).json({ message: 'Utente non trovato' });
+    }
+
+    if (teamAccessState.is_team_locked && !teamAccessState.allow_locked_team_edits) {
         return res.status(400).json({ message: 'La squadra e bloccata' });
     }
 

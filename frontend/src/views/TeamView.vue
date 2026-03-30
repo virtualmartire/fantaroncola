@@ -1,16 +1,29 @@
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { api } from '../services/api'
 import { useGameStore } from '../stores/game'
 import { useAuthStore } from '../stores/auth'
 
 const store = useGameStore()
 const authStore = useAuthStore()
 const { addSinger, removeSinger, fetchSingers, fetchTeam, lockTeam } = store
+const allowLockedTeamEdits = ref(false)
 
 onMounted(() => {
   fetchSingers()
   fetchTeam()
+  fetchTeamSettings()
 })
+
+const fetchTeamSettings = async () => {
+  try {
+    const data = await api.get('/team/settings')
+    allowLockedTeamEdits.value = Boolean(data?.allow_locked_team_edits)
+  } catch (error) {
+    console.error('Errore nel caricamento delle impostazioni squadra:', error)
+    allowLockedTeamEdits.value = false
+  }
+}
 
 const handleLockTeam = async () => {
   if (!confirm('Vuoi davvero bloccare la squadra? Dopo non potrai piu modificarla.')) {
@@ -26,9 +39,17 @@ const handleLockTeam = async () => {
 }
 
 const isSingerSelected = (singerId) => store.userTeam.some((singer) => singer.id === singerId)
+const isTeamEditingDisabled = computed(() => (
+  authStore.user?.is_team_locked && !allowLockedTeamEdits.value
+))
+const canEditTeam = computed(() => (
+  !authStore.user?.is_team_locked || allowLockedTeamEdits.value
+))
 const teamDescription = computed(() => (
-  authStore.user?.is_team_locked
+  isTeamEditingDisabled.value
     ? 'Squadra confermata. Ora puoi seguirne l\'andamento e tifare i tuoi cantanti in classifica.'
+    : authStore.user?.is_team_locked
+      ? 'Squadra confermata, ma al momento puoi ancora modificarla.'
     : 'Scegli 5 cantanti e ottimizza i tuoi roncoli per restare competitivo.'
 ))
 </script>
@@ -55,10 +76,16 @@ const teamDescription = computed(() => (
 
         <div class="flex items-center gap-3">
           <div
-            v-if="authStore.user?.is_team_locked"
+            v-if="isTeamEditingDisabled"
             class="status-badge rounded-full px-4 py-2 text-sm font-semibold"
           >
             Squadra bloccata
+          </div>
+          <div
+            v-else-if="authStore.user?.is_team_locked"
+            class="status-badge rounded-full px-4 py-2 text-sm font-semibold"
+          >
+            Modifiche ancora aperte
           </div>
           <button
             v-else
@@ -78,6 +105,9 @@ const teamDescription = computed(() => (
           <p class="gold-copy mt-1 text-sm">
             {{ teamDescription }}
           </p>
+          <p class="gold-muted mt-2 text-sm">
+            Le squadre saranno modificabili fino alla sera prima dell'inizio del concorso.
+          </p>
         </div>
       </div>
 
@@ -95,7 +125,7 @@ const teamDescription = computed(() => (
           class="surface-card group relative rounded-2xl border-l-4 border-[#d4af37] p-4"
         >
           <button
-            v-if="!authStore.user?.is_team_locked"
+            v-if="canEditTeam"
             @click="removeSinger(singer.id)"
             class="absolute right-3 top-3 text-sm font-medium text-[#f2a8a3] opacity-0 transition group-hover:opacity-100"
           >
@@ -116,7 +146,7 @@ const teamDescription = computed(() => (
       </div>
     </section>
 
-    <section v-if="!authStore.user?.is_team_locked">
+    <section v-if="canEditTeam">
       <div class="mb-4">
         <h2 class="text-2xl font-black tracking-tight text-[#fff0cf]">Cantanti disponibili</h2>
         <p class="gold-copy mt-1 text-sm">
