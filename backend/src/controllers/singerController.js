@@ -1,7 +1,9 @@
 const db = require('../config/db');
+const { syncPointsFromCsv } = require('../utils/syncPoints');
 
 exports.getAllSingers = async (req, res) => {
   try {
+    await syncPointsFromCsv(db);
     const result = await db.query('SELECT * FROM singers ORDER BY cost DESC');
     res.json(result.rows);
   } catch (err) {

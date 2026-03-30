@@ -39,6 +39,13 @@ const handleLogout = () => {
               Classifica
             </RouterLink>
             <RouterLink
+              v-if="authStore.isAuthenticated"
+              to="/punteggi-cantanti"
+              class="nav-link text-sm font-medium transition"
+            >
+              Punti cantanti
+            </RouterLink>
+            <RouterLink
               v-if="authStore.user?.is_admin"
               to="/admin"
               class="nav-link text-sm font-medium transition"
