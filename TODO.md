@@ -6,7 +6,6 @@
 [x] dati dei cantanti disponibili
 [x] pagina con i punteggi dei cantanti
 [] finire lista cantanti (rileggendo tutto)
-[] costi dei cantanti
 [] foto dei cantanti
 [] regolamento
 [] deploy su fantaroncola.it
