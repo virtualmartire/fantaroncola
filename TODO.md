@@ -5,9 +5,10 @@
 [x] captcha
 [x] dati dei cantanti disponibili
 [x] pagina con i punteggi dei cantanti
-[] finire lista cantanti (rileggendo tutto)
+[x] finire lista cantanti
 [] foto dei cantanti
 [] regolamento
+[] rileggere tutto
 [] deploy su fantaroncola.it
 
 ## Bugs

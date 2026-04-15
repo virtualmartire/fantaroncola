@@ -4,7 +4,7 @@ const { syncPointsFromCsv } = require('../utils/syncPoints');
 exports.getAllSingers = async (req, res) => {
   try {
     await syncPointsFromCsv(db);
-    const result = await db.query('SELECT * FROM singers ORDER BY cost DESC');
+    const result = await db.query('SELECT * FROM singers ORDER BY display_order ASC, name ASC');
     res.json(result.rows);
   } catch (err) {
     console.error(err.message);
@@ -13,11 +13,13 @@ exports.getAllSingers = async (req, res) => {
 };
 
 exports.createSinger = async (req, res) => {
-  const { name, song_title, description, cost, image } = req.body;
+  const { name, song_title, description, category, image } = req.body;
   try {
     const newSinger = await db.query(
-      'INSERT INTO singers (name, song_title, description, cost, image, total_score) VALUES ($1, $2, $3, $4, $5, 0) RETURNING *',
-      [name, song_title, description, cost, image]
+      `INSERT INTO singers (name, song_title, description, category, image, total_score)
+       VALUES ($1, $2, $3, $4, $5, 0)
+       RETURNING *`,
+      [name, song_title, description, category || 'adulti', image]
     );
     res.json(newSinger.rows[0]);
   } catch (err) {
@@ -28,11 +30,14 @@ exports.createSinger = async (req, res) => {
 
 exports.updateSinger = async (req, res) => {
   const { id } = req.params;
-  const { name, song_title, description, cost, image, total_score } = req.body;
+  const { name, song_title, description, category, image, total_score } = req.body;
   try {
     const updatedSinger = await db.query(
-      'UPDATE singers SET name = $1, song_title = $2, description = $3, cost = $4, image = $5, total_score = $6 WHERE id = $7 RETURNING *',
-      [name, song_title, description, cost, image, total_score, id]
+      `UPDATE singers
+       SET name = $1, song_title = $2, description = $3, category = $4, image = $5, total_score = $6
+       WHERE id = $7
+       RETURNING *`,
+      [name, song_title, description, category || 'adulti', image, total_score, id]
     );
     if (updatedSinger.rows.length === 0) {
       return res.status(404).json({ message: 'Cantante non trovato' });

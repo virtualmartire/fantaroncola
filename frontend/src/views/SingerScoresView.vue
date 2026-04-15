@@ -4,20 +4,20 @@ import { api } from '../services/api'
 
 const singerScores = ref([])
 
-const getSeedOrder = (seedKey) => {
-  const match = seedKey?.match(/(\d+)/)
-  return match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER
-}
-
 const fetchSingerScores = async () => {
   try {
     const data = await api.get('/singers')
     singerScores.value = [...data]
-      .sort((left, right) => getSeedOrder(left.seed_key) - getSeedOrder(right.seed_key))
+      .sort((left, right) => {
+        const leftOrder = parseInt(left.display_order, 10) || Number.MAX_SAFE_INTEGER
+        const rightOrder = parseInt(right.display_order, 10) || Number.MAX_SAFE_INTEGER
+        return leftOrder - rightOrder
+      })
       .map((singer) => ({
         id: singer.id,
         name: singer.name,
         songTitle: singer.song_title,
+        description: singer.description,
         day1: parseInt(singer.day1_score, 10) || 0,
         day2: parseInt(singer.day2_score, 10) || 0,
         day3: parseInt(singer.day3_score, 10) || 0,
@@ -79,6 +79,12 @@ onMounted(() => {
                 </div>
                 <div class="mt-1 break-words text-xs font-medium text-[#e0bf73]">
                   {{ singer.songTitle }}
+                </div>
+                <div
+                  v-if="singer.description"
+                  class="gold-muted mt-1 break-words text-xs leading-5"
+                >
+                  {{ singer.description }}
                 </div>
               </div>
             </td>

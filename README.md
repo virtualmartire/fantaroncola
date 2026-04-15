@@ -12,8 +12,8 @@ The project is divided into two main parts:
 ## Features
 
 - **User Authentication**: Register and Login without email confirmation.
-- **Team Management**: Create a fantasy team by selecting singers within your roncoli budget.
-- **Singer Market**: View available singers and their roncoli values.
+- **Team Management**: Create a fantasy team by selecting 2 adulti and 2 bambini.
+- **Singer Market**: View the available singers and their categories.
 - **Leaderboard**: View the current standings of users.
 
 ## Tech Stack

@@ -12,6 +12,9 @@ const { syncPointsFromCsv } = require('./utils/syncPoints');
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const getSeedKey = (singer, index) => singer.seed_key || `slot-${index + 1}`;
 const getLegacyPlaceholderName = (index) => `Singer ${String.fromCharCode(65 + index)}`;
+const getSingerSearchNames = (singer) => {
+  return Array.from(new Set([singer.name, ...(singer.legacy_names || [])]));
+};
 const ensureAdminUser = async () => {
   const adminUsername = process.env.ADMIN_USERNAME?.trim();
   const adminPassword = process.env.ADMIN_PASSWORD;
@@ -113,8 +116,9 @@ const initDb = async () => {
       name VARCHAR(255) UNIQUE NOT NULL,
       song_title VARCHAR(255),
       description TEXT,
-      cost INTEGER NOT NULL,
+      category VARCHAR(32) DEFAULT 'adulti',
       image VARCHAR(255),
+      display_order INTEGER DEFAULT 0,
       day1_score INTEGER DEFAULT 0,
       day2_score INTEGER DEFAULT 0,
       day3_score INTEGER DEFAULT 0,
@@ -141,6 +145,21 @@ const initDb = async () => {
   try {
       await db.query('ALTER TABLE singers ADD COLUMN IF NOT EXISTS description TEXT');
   } catch (e) { console.log('Column description might already exist'); }
+
+  // Add category if not exists (migration)
+  try {
+      await db.query("ALTER TABLE singers ADD COLUMN IF NOT EXISTS category VARCHAR(32) DEFAULT 'adulti'");
+  } catch (e) { console.log('Column category might already exist'); }
+
+  // Add display_order if not exists (migration)
+  try {
+      await db.query('ALTER TABLE singers ADD COLUMN IF NOT EXISTS display_order INTEGER DEFAULT 0');
+  } catch (e) { console.log('Column display_order might already exist'); }
+
+  // Remove legacy cost column if it still exists
+  try {
+      await db.query('ALTER TABLE singers DROP COLUMN IF EXISTS cost');
+  } catch (e) { console.log('Column cost might already be removed'); }
 
   // Add day1_score if not exists (migration)
   try {
@@ -182,6 +201,8 @@ const initDb = async () => {
       for (const [index, singer] of singersData.entries()) {
           const seedKey = getSeedKey(singer, index);
           const legacyPlaceholderName = getLegacyPlaceholderName(index);
+          const searchNames = getSingerSearchNames(singer);
+          const displayOrder = index + 1;
 
           let canonicalSinger = await db.query(
             'SELECT id FROM singers WHERE seed_key = $1 LIMIT 1',
@@ -198,8 +219,8 @@ const initDb = async () => {
               await db.query('UPDATE singers SET seed_key = $1 WHERE id = $2', [seedKey, legacySinger.rows[0].id]);
             } else {
               const namedSinger = await db.query(
-                'SELECT id FROM singers WHERE seed_key IS NULL AND name = $1 ORDER BY id LIMIT 1',
-                [singer.name]
+                'SELECT id FROM singers WHERE seed_key IS NULL AND name = ANY($1::text[]) ORDER BY id LIMIT 1',
+                [searchNames]
               );
 
               if (namedSinger.rows.length > 0) {
@@ -218,23 +239,31 @@ const initDb = async () => {
               `UPDATE teams
                SET singer_id = $1
                WHERE singer_id IN (
-                 SELECT id FROM singers WHERE seed_key IS NULL AND name = $2
+                 SELECT id FROM singers WHERE seed_key IS NULL AND name = ANY($2::text[])
                )`,
-              [canonicalSinger.rows[0].id, singer.name]
+              [canonicalSinger.rows[0].id, searchNames]
             );
 
             await db.query(
-              'DELETE FROM singers WHERE seed_key IS NULL AND name = $1',
-              [singer.name]
+              'DELETE FROM singers WHERE seed_key IS NULL AND name = ANY($1::text[])',
+              [searchNames]
             );
           }
 
           await db.query(
-            `INSERT INTO singers (seed_key, name, song_title, description, cost, image, day1_score, day2_score, day3_score, total_score) 
-             VALUES ($1, $2, $3, $4, $5, $6, 0, 0, 0, 0) 
+            `INSERT INTO singers (seed_key, name, song_title, description, category, image, display_order, day1_score, day2_score, day3_score, total_score) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, 0, 0, 0, 0) 
              ON CONFLICT (seed_key) 
-             DO UPDATE SET name = $2, song_title = $3, description = $4, cost = $5, image = $6`,
-            [seedKey, singer.name, singer.song_title, singer.description, singer.cost, singer.image]
+             DO UPDATE SET name = $2, song_title = $3, description = $4, category = $5, image = $6, display_order = $7`,
+            [
+              seedKey,
+              singer.name,
+              singer.song_title,
+              singer.description || '',
+              singer.category || 'adulti',
+              singer.image,
+              displayOrder,
+            ]
           );
       }
       console.log('Synced singers from JSON');

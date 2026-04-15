@@ -5,14 +5,39 @@ import { api } from '../services/api'
 export const useGameStore = defineStore('game', () => {
   const singers = ref([])
   const userTeam = ref([])
-  const maxBudget = 100
+  const teamLimits = {
+    adulti: 2,
+    bambini: 2,
+  }
 
-  const currentBudget = computed(() => {
-    const spent = userTeam.value.reduce((total, singer) => total + singer.cost, 0)
-    return maxBudget - spent
-  })
+  const selectedCounts = computed(() => userTeam.value.reduce((counts, singer) => {
+    const category = singer.category || 'adulti'
+    counts[category] = (counts[category] || 0) + 1
+    return counts
+  }, { adulti: 0, bambini: 0 }))
 
-  const isTeamFull = computed(() => userTeam.value.length >= 5)
+  const totalSlots = computed(() => Object.values(teamLimits).reduce((sum, limit) => sum + limit, 0))
+  const isTeamFull = computed(() => userTeam.value.length >= totalSlots.value)
+  const isTeamComplete = computed(() => Object.entries(teamLimits).every(([category, limit]) => (
+    (selectedCounts.value[category] || 0) === limit
+  )))
+
+  function categoryLabel(category) {
+    return category === 'bambini' ? 'bambini' : 'adulti'
+  }
+
+  function remainingSlotsForCategory(category) {
+    return Math.max(0, teamLimits[category] - (selectedCounts.value[category] || 0))
+  }
+
+  function canSelectSinger(singer) {
+    if (userTeam.value.find((selectedSinger) => selectedSinger.id === singer.id)) return false
+
+    const category = singer.category || 'adulti'
+    if (!teamLimits[category]) return false
+
+    return remainingSlotsForCategory(category) > 0
+  }
 
   async function fetchSingers() {
     try {
@@ -39,9 +64,7 @@ export const useGameStore = defineStore('game', () => {
   }
 
   async function addSinger(singer) {
-    if (userTeam.value.find(s => s.id === singer.id)) return
-    if (userTeam.value.length >= 5) return
-    if (currentBudget.value < singer.cost) return
+    if (!canSelectSinger(singer)) return
 
     try {
       const updatedTeam = await api.post('/team', { singerId: singer.id })
@@ -72,9 +95,14 @@ export const useGameStore = defineStore('game', () => {
   return {
     singers,
     userTeam,
-    maxBudget,
-    currentBudget,
+    teamLimits,
+    selectedCounts,
+    totalSlots,
     isTeamFull,
+    isTeamComplete,
+    categoryLabel,
+    remainingSlotsForCategory,
+    canSelectSinger,
     fetchSingers,
     fetchTeam,
     addSinger,

@@ -6,12 +6,12 @@ const authStore = useAuthStore()
 
 const highlights = [
   {
-    value: '5',
+    value: '4',
     label: 'cantanti da schierare',
   },
   {
-    value: '100',
-    label: 'roncoli a disposizione',
+    value: '2 + 2',
+    label: 'bambini e adulti da scegliere',
   },
   {
     value: 'Live',
@@ -26,7 +26,7 @@ const steps = [
   },
   {
     title: 'Scegli i tuoi artisti',
-    description: 'Componi una squadra di 5 cantanti senza sforare i roncoli disponibili.',
+    description: 'Componi una squadra con 2 adulti e 2 bambini.',
   },
   {
     title: 'Segui la classifica',
@@ -36,7 +36,7 @@ const steps = [
 
 const strengths = [
   'Perfetto per seguire un contest musicale con amici, community o colleghi.',
-  'Ogni scelta conta: bilancia nomi forti, sorprese e roncoli rimasti.',
+  'Ogni scelta conta: bilancia bene le due categorie e punta sui cantanti giusti.',
   'Quando sei soddisfatto puoi bloccare la squadra e giocarti tutto fino alla fine.',
 ]
 </script>
@@ -51,11 +51,11 @@ const strengths = [
           </span>
           <div class="space-y-4">
             <h1 class="max-w-3xl text-4xl font-black tracking-tight text-[#fff3db] sm:text-5xl">
-              Scegli la tua squadra, gestisci i roncoli e punta alla vetta di FantaRoncola.
+              Scegli la tua squadra e punta alla vetta di FantaRoncola.
             </h1>
             <p class="gold-copy max-w-2xl text-lg">
               Una serata da red carpet trasformata in gioco: segui il concorso musicale con piu pathos,
-              selezioni 5 artisti, confermi la rosa e aspetti che i punti facciano la differenza.
+              selezioni 2 adulti e 2 bambini, confermi la rosa e aspetti che i punti facciano la differenza.
             </p>
           </div>
           <div class="flex flex-col gap-3 sm:flex-row">
@@ -136,12 +136,12 @@ const strengths = [
           Costruisci la rosa migliore prima che i giochi siano fatti.
         </h2>
         <p class="gold-copy mt-4 text-sm leading-6">
-          Hai 100 roncoli e solo 5 slot disponibili. Scegli i cantanti giusti,
-          controlla la classifica e difendi il tuo posto fino all'ultimo aggiornamento.
+          Scegli 2 adulti e 2 bambini, controlla la classifica e difendi il tuo posto
+          fino all'ultimo aggiornamento.
         </p>
         <div class="mt-8 space-y-3 text-sm text-[#ead7af]">
           <div class="gold-stat rounded-2xl px-4 py-3">
-            Rosa da 5 cantanti con massimo 100 roncoli.
+            Rosa da 4 cantanti: 2 adulti e 2 bambini.
           </div>
           <div class="gold-stat rounded-2xl px-4 py-3">
             Possibilita di bloccare la squadra quando sei convinto delle tue scelte.
