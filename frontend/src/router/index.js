@@ -12,6 +12,11 @@ const router = createRouter({
       component: LandingView,
     },
     {
+      path: '/regolamento',
+      name: 'regolamento',
+      component: () => import('../views/RegolamentoView.vue'),
+    },
+    {
       path: '/accedi',
       name: 'auth',
       component: HomeView,
