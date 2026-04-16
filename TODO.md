@@ -6,8 +6,8 @@
 [x] dati dei cantanti disponibili
 [x] pagina con i punteggi dei cantanti
 [x] finire lista cantanti
-[] foto dei cantanti
 [] regolamento
+[] foto dei cantanti
 [] rileggere tutto
 [] deploy su fantaroncola.it
 

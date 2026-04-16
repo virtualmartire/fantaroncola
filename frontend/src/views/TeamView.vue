@@ -73,6 +73,17 @@ const isTeamEditingDisabled = computed(() => (
 const canEditTeam = computed(() => (
   !authStore.user?.is_team_locked || allowLockedTeamEdits.value || requiresTeamUpdate.value
 ))
+
+const singerPhotoSrc = (singer) => {
+  const url = singer?.image
+  return typeof url === 'string' && url.trim() !== '' ? url.trim() : null
+}
+
+const singerInitial = (singer) => {
+  const letter = (singer?.name?.trim() || '').charAt(0)
+  return letter ? letter.toUpperCase() : '?'
+}
+
 const teamDescription = computed(() => (
   requiresTeamUpdate.value
     ? 'La tua squadra era stata confermata con le vecchie regole: aggiornala a 2 adulti e 2 bambini.'
@@ -166,10 +177,18 @@ const teamDescription = computed(() => (
           </button>
           <div class="mb-3 flex items-center justify-center">
             <img
-              :src="singer.image"
+              v-if="singerPhotoSrc(singer)"
+              :src="singerPhotoSrc(singer)"
               :alt="singer.name"
               class="h-20 w-20 rounded-full border-2 border-[#d4af37] object-cover"
             >
+            <div
+              v-else
+              class="flex h-20 w-20 items-center justify-center rounded-full border-2 border-[#d4af37] bg-[rgba(255,255,255,0.06)] text-lg font-bold text-[#c9ab67]"
+              aria-hidden="true"
+            >
+              {{ singerInitial(singer) }}
+            </div>
           </div>
           <div class="text-center text-lg font-bold text-[#fff0cf]">{{ singer.name }}</div>
           <div class="mt-1 text-center text-sm font-semibold text-[#ffe09a]">{{ singer.song_title }}</div>
@@ -215,10 +234,18 @@ const teamDescription = computed(() => (
             >
               <div class="mb-3 flex items-start gap-3">
                 <img
-                  :src="singer.image"
+                  v-if="singerPhotoSrc(singer)"
+                  :src="singerPhotoSrc(singer)"
                   :alt="singer.name"
-                  class="h-12 w-12 rounded-full object-cover"
+                  class="h-12 w-12 shrink-0 rounded-full object-cover"
                 >
+                <div
+                  v-else
+                  class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[rgba(212,175,55,0.45)] bg-[rgba(255,255,255,0.06)] text-sm font-bold text-[#c9ab67]"
+                  aria-hidden="true"
+                >
+                  {{ singerInitial(singer) }}
+                </div>
                 <div class="min-w-0 flex-1">
                   <div class="font-bold text-[#fff0cf]">{{ singer.name }}</div>
                   <div class="text-xs font-semibold text-[#ffe09a]">{{ singer.song_title }}</div>
