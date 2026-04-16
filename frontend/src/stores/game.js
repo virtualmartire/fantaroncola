@@ -4,23 +4,45 @@ import { api } from '../services/api'
 
 export const useGameStore = defineStore('game', () => {
   const singers = ref([])
+  /** Persisted roster from the server */
   const userTeam = ref([])
+  /** Local working copy; changes apply on confirm */
+  const draftTeam = ref([])
   const teamLimits = {
     adulti: 2,
     bambini: 2,
   }
 
-  const selectedCounts = computed(() => userTeam.value.reduce((counts, singer) => {
+  function syncDraftFromCommitted() {
+    draftTeam.value = userTeam.value.map((singer) => ({ ...singer }))
+  }
+
+  const selectedCounts = computed(() => draftTeam.value.reduce((counts, singer) => {
+    const category = singer.category || 'adulti'
+    counts[category] = (counts[category] || 0) + 1
+    return counts
+  }, { adulti: 0, bambini: 0 }))
+
+  const committedSelectedCounts = computed(() => userTeam.value.reduce((counts, singer) => {
     const category = singer.category || 'adulti'
     counts[category] = (counts[category] || 0) + 1
     return counts
   }, { adulti: 0, bambini: 0 }))
 
   const totalSlots = computed(() => Object.values(teamLimits).reduce((sum, limit) => sum + limit, 0))
-  const isTeamFull = computed(() => userTeam.value.length >= totalSlots.value)
+  const isTeamFull = computed(() => draftTeam.value.length >= totalSlots.value)
   const isTeamComplete = computed(() => Object.entries(teamLimits).every(([category, limit]) => (
     (selectedCounts.value[category] || 0) === limit
   )))
+  const isCommittedTeamComplete = computed(() => Object.entries(teamLimits).every(([category, limit]) => (
+    (committedSelectedCounts.value[category] || 0) === limit
+  )))
+
+  const hasDraftChanges = computed(() => {
+    const a = [...userTeam.value.map((s) => s.id)].sort((x, y) => x - y).join(',')
+    const b = [...draftTeam.value.map((s) => s.id)].sort((x, y) => x - y).join(',')
+    return a !== b
+  })
 
   function categoryLabel(category) {
     return category === 'bambini' ? 'bambini' : 'adulti'
@@ -31,7 +53,7 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function canSelectSinger(singer) {
-    if (userTeam.value.find((selectedSinger) => selectedSinger.id === singer.id)) return false
+    if (draftTeam.value.find((selectedSinger) => selectedSinger.id === singer.id)) return false
 
     const category = singer.category || 'adulti'
     if (!teamLimits[category]) return false
@@ -51,37 +73,42 @@ export const useGameStore = defineStore('game', () => {
   async function fetchTeam() {
     if (!localStorage.getItem('token')) {
       userTeam.value = []
+      draftTeam.value = []
       return
     }
 
     try {
       const data = await api.get('/team')
       userTeam.value = data
+      syncDraftFromCommitted()
     } catch (error) {
       console.error('Errore nel caricamento della squadra:', error)
       userTeam.value = []
+      draftTeam.value = []
     }
   }
 
-  async function addSinger(singer) {
+  function addSinger(singer) {
     if (!canSelectSinger(singer)) return
-
-    try {
-      const updatedTeam = await api.post('/team', { singerId: singer.id })
-      userTeam.value = updatedTeam
-    } catch (error) {
-      console.error('Errore durante l\'aggiunta del cantante:', error)
-      alert(error.message)
-    }
+    draftTeam.value = [...draftTeam.value, { ...singer }]
   }
 
-  async function removeSinger(singerId) {
-    try {
-      const updatedTeam = await api.request(`/team/${singerId}`, 'DELETE')
-      userTeam.value = updatedTeam
-    } catch (error) {
-      console.error('Errore durante la rimozione del cantante:', error)
+  function removeSinger(singerId) {
+    draftTeam.value = draftTeam.value.filter((s) => s.id !== singerId)
+  }
+
+  function discardDraftChanges() {
+    syncDraftFromCommitted()
+  }
+
+  async function persistDraftTeam() {
+    if (!isTeamComplete.value) {
+      throw new Error('La squadra deve avere esattamente 2 adulti e 2 bambini')
     }
+    const singerIds = draftTeam.value.map((s) => s.id)
+    const updated = await api.request('/team', 'PUT', { singerIds })
+    userTeam.value = updated
+    syncDraftFromCommitted()
   }
 
   async function lockTeam() {
@@ -95,11 +122,14 @@ export const useGameStore = defineStore('game', () => {
   return {
     singers,
     userTeam,
+    draftTeam,
     teamLimits,
     selectedCounts,
     totalSlots,
     isTeamFull,
     isTeamComplete,
+    isCommittedTeamComplete,
+    hasDraftChanges,
     categoryLabel,
     remainingSlotsForCategory,
     canSelectSinger,
@@ -107,6 +137,8 @@ export const useGameStore = defineStore('game', () => {
     fetchTeam,
     addSinger,
     removeSinger,
-    lockTeam
+    discardDraftChanges,
+    persistDraftTeam,
+    lockTeam,
   }
 })

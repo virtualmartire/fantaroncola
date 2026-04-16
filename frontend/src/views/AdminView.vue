@@ -20,11 +20,20 @@ const fetchTeamSettings = async () => {
 }
 
 const toggleLockedTeamEditability = async () => {
+  const willAllow = !allowLockedTeamEdits.value
+  const message = willAllow
+    ? 'Vuoi consentire agli utenti di modificare le squadre confermate?'
+    : 'Vuoi impedire le modifiche alle squadre confermate?'
+
+  if (!confirm(message)) {
+    return
+  }
+
   isSaving.value = true
 
   try {
     const data = await api.request('/team/settings', 'PUT', {
-      allowLockedTeamEdits: !allowLockedTeamEdits.value,
+      allowLockedTeamEdits: willAllow,
     })
 
     allowLockedTeamEdits.value = Boolean(data?.allow_locked_team_edits)
@@ -41,8 +50,8 @@ const statusLabel = computed(() => (
 
 const statusDescription = computed(() => (
   allowLockedTeamEdits.value
-    ? 'Gli utenti possono ancora modificare anche le squadre gia confermate.'
-    : 'Le squadre confermate dagli utenti restano non modificabili.'
+    ? 'Gli utenti possono ancora modificare le squadre confermate.'
+    : 'Le squadre confermate dagli utenti non sono più modificabili.'
 ))
 
 const buttonLabel = computed(() => {
@@ -55,7 +64,7 @@ const buttonLabel = computed(() => {
   }
 
   return allowLockedTeamEdits.value
-    ? 'Blocca di nuovo le squadre confermate'
+    ? 'Blocca le squadre confermate'
     : 'Rendi modificabili le squadre confermate'
 })
 
@@ -67,9 +76,6 @@ onMounted(fetchTeamSettings)
     <div>
       <p class="gold-kicker text-sm font-semibold uppercase">Backstage</p>
       <h1 class="mt-2 text-3xl font-black tracking-tight text-[#fff0cf]">Pannello admin</h1>
-      <p class="gold-copy mt-2 text-sm">
-        Controlla se le squadre gia confermate dagli utenti possono ancora essere modificate.
-      </p>
     </div>
 
     <div class="surface-card rounded-2xl p-6 sm:p-8">
@@ -79,7 +85,7 @@ onMounted(fetchTeamSettings)
             {{ statusLabel }}
           </div>
           <h2 class="mt-4 text-2xl font-black tracking-tight text-[#fff0cf]">
-            Modifiche alle squadre bloccate
+            Modifiche alle squadre
           </h2>
           <p class="gold-copy mt-3 text-sm leading-6">
             {{ statusDescription }}

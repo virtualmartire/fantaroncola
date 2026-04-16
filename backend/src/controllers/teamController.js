@@ -113,77 +113,71 @@ exports.getTeam = async (req, res) => {
   }
 };
 
-exports.addSinger = async (req, res) => {
-  const { singerId } = req.body;
+exports.replaceTeam = async (req, res) => {
+  const { singerIds } = req.body;
 
-  try {
-    const teamAccessState = await getTeamAccessState(req.user.id);
-    if (!teamAccessState) {
-        return res.status(404).json({ message: 'Utente non trovato' });
-    }
-
-    const currentTeam = await getTeamWithSingers(req.user.id);
-
-    if (!canModifyLockedTeam(teamAccessState, currentTeam)) {
-        return res.status(400).json({ message: 'La squadra e bloccata' });
-    }
-
-    // Check if singer exists
-    const singerCheck = await db.query('SELECT * FROM singers WHERE id = $1', [singerId]);
-    if (singerCheck.rows.length === 0) {
-        return res.status(404).json({ message: 'Cantante non trovato' });
-    }
-    const singer = singerCheck.rows[0];
-
-    const teamCounts = countTeamByCategory(currentTeam);
-    const singerCategory = singer.category || 'adulti';
-    
-    // Check if already in team
-    const inTeam = currentTeam.some((teamSinger) => teamSinger.id === singerId);
-    if (inTeam) {
-        return res.status(400).json({ message: 'Questo cantante e gia nella tua squadra' });
-    }
-
-    if (!TEAM_LIMITS[singerCategory]) {
-        return res.status(400).json({ message: 'Categoria cantante non valida' });
-    }
-
-    if (teamCounts[singerCategory] >= TEAM_LIMITS[singerCategory]) {
-        return res.status(400).json({ message: `Hai gia selezionato ${TEAM_LIMITS[singerCategory]} ${singerCategory}` });
-    }
-
-    if (currentTeam.length >= Object.values(TEAM_LIMITS).reduce((sum, limit) => sum + limit, 0)) {
-        return res.status(400).json({ message: 'La squadra e al completo' });
-    }
-
-    await db.query('INSERT INTO teams (user_id, singer_id) VALUES ($1, $2)', [req.user.id, singerId]);
-
-    const updatedTeam = await getTeamWithSingers(req.user.id);
-
-    res.json(updatedTeam);
-
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ message: 'Errore del server' });
+  if (!Array.isArray(singerIds)) {
+    return res.status(400).json({ message: 'Elenco cantanti non valido' });
   }
-};
 
-exports.removeSinger = async (req, res) => {
-  const { singerId } = req.params;
+  const numericIds = singerIds.map((id) => Number(id));
+  if (numericIds.some((id) => !Number.isInteger(id) || id < 1)) {
+    return res.status(400).json({ message: 'Id cantante non valido' });
+  }
+
+  const uniqueIds = [...new Set(numericIds)];
+  if (uniqueIds.length !== numericIds.length) {
+    return res.status(400).json({ message: 'Non puoi selezionare lo stesso cantante piu volte' });
+  }
+
+  const expectedTotal = Object.values(TEAM_LIMITS).reduce((sum, n) => sum + n, 0);
+  if (uniqueIds.length !== expectedTotal) {
+    return res.status(400).json({
+      message: `La squadra deve avere esattamente ${expectedTotal} cantanti`,
+    });
+  }
 
   try {
     const teamAccessState = await getTeamAccessState(req.user.id);
     if (!teamAccessState) {
-        return res.status(404).json({ message: 'Utente non trovato' });
+      return res.status(404).json({ message: 'Utente non trovato' });
     }
 
     const currentTeam = await getTeamWithSingers(req.user.id);
 
     if (!canModifyLockedTeam(teamAccessState, currentTeam)) {
-        return res.status(400).json({ message: 'La squadra e bloccata' });
+      return res.status(400).json({ message: 'La squadra e bloccata' });
     }
 
-    await db.query('DELETE FROM teams WHERE user_id = $1 AND singer_id = $2', [req.user.id, singerId]);
+    const singersResult = await db.query('SELECT * FROM singers WHERE id = ANY($1::int[])', [uniqueIds]);
+    if (singersResult.rows.length !== uniqueIds.length) {
+      return res.status(400).json({ message: 'Uno o piu cantanti non sono validi' });
+    }
+
+    const counts = countTeamByCategory(singersResult.rows);
+    if (!isTeamComplete(counts)) {
+      return res.status(400).json({
+        message: 'Per confermare la squadra devi scegliere 2 adulti e 2 bambini',
+      });
+    }
+
+    const client = await db.pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('DELETE FROM teams WHERE user_id = $1', [req.user.id]);
+      for (const singerId of uniqueIds) {
+        await client.query(
+          'INSERT INTO teams (user_id, singer_id) VALUES ($1, $2)',
+          [req.user.id, singerId]
+        );
+      }
+      await client.query('COMMIT');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
 
     const updatedTeam = await getTeamWithSingers(req.user.id);
     res.json(updatedTeam);

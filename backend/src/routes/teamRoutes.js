@@ -19,15 +19,10 @@ router.put('/settings', auth, admin, teamController.updateTeamSettings);
 // @access  Private
 router.get('/', auth, teamController.getTeam);
 
-// @route   POST api/team
-// @desc    Add singer to team
+// @route   PUT api/team
+// @desc    Replace entire team (confirm draft)
 // @access  Private
-router.post('/', auth, teamController.addSinger);
-
-// @route   DELETE api/team/:singerId
-// @desc    Remove singer from team
-// @access  Private
-router.delete('/:singerId', auth, teamController.removeSinger);
+router.put('/', auth, teamController.replaceTeam);
 
 // @route   POST api/team/lock
 // @desc    Lock team selection

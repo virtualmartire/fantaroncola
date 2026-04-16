@@ -6,7 +6,15 @@ import { useAuthStore } from '../stores/auth'
 
 const store = useGameStore()
 const authStore = useAuthStore()
-const { addSinger, removeSinger, fetchSingers, fetchTeam, lockTeam } = store
+const {
+  addSinger,
+  removeSinger,
+  fetchSingers,
+  fetchTeam,
+  lockTeam,
+  persistDraftTeam,
+  discardDraftChanges,
+} = store
 const allowLockedTeamEdits = ref(false)
 
 const categorySections = computed(() => ([
@@ -51,27 +59,49 @@ const fetchTeamSettings = async () => {
   }
 }
 
-const handleLockTeam = async () => {
-  if (!confirm('Vuoi davvero bloccare la squadra? Dopo non potrai piu modificarla.')) {
+const handleConfirmTeam = async () => {
+  if (!store.isTeamComplete) return
+
+  const alreadyLocked = authStore.user?.is_team_locked
+  if (!alreadyLocked) {
+    if (!confirm('Dopo aver confermato la squadra, potrai modificarla solo fino alla sera prima dell\'inizio della Roncola.')) {
+      return
+    }
+  } else if (!confirm('Confermi la nuova composizione della squadra?')) {
     return
   }
 
   try {
-    await lockTeam()
-    authStore.fetchUser()
+    await persistDraftTeam()
+    if (!alreadyLocked) {
+      await lockTeam()
+    }
+    await authStore.fetchUser()
   } catch (error) {
-    alert(error.message || 'Impossibile bloccare la squadra')
+    alert(error.message || 'Operazione non riuscita')
   }
 }
 
-const isSingerSelected = (singerId) => store.userTeam.some((singer) => singer.id === singerId)
+const handleDiscardDraft = () => {
+  if (!store.hasDraftChanges) return
+  if (!confirm('Vuoi scartare le modifiche e tornare alla squadra salvata?')) {
+    return
+  }
+  discardDraftChanges()
+}
+
+const isSingerSelected = (singerId) => store.draftTeam.some((singer) => singer.id === singerId)
 const canSelectSinger = (singer) => store.canSelectSinger(singer)
-const requiresTeamUpdate = computed(() => authStore.user?.is_team_locked && !store.isTeamComplete)
+const requiresTeamUpdate = computed(() => authStore.user?.is_team_locked && !store.isCommittedTeamComplete)
 const isTeamEditingDisabled = computed(() => (
   authStore.user?.is_team_locked && !allowLockedTeamEdits.value && !requiresTeamUpdate.value
 ))
 const canEditTeam = computed(() => (
   !authStore.user?.is_team_locked || allowLockedTeamEdits.value || requiresTeamUpdate.value
+))
+
+const displayedTeam = computed(() => (
+  canEditTeam.value ? store.draftTeam : store.userTeam
 ))
 
 const singerPhotoSrc = (singer) => {
@@ -84,13 +114,18 @@ const singerInitial = (singer) => {
   return letter ? letter.toUpperCase() : '?'
 }
 
-const teamDescription = computed(() => (
-  isTeamEditingDisabled.value
-    ? 'Squadra confermata. Ora puoi seguirne l\'andamento e tifare i tuoi cantanti in classifica.'
-    : authStore.user?.is_team_locked
-      ? 'Squadra confermata, ma al momento puoi ancora modificarla.'
+const teamDescription = computed(() => {
+  if (isTeamEditingDisabled.value) {
+    return 'Squadra confermata. Ora puoi seguirne l\'andamento e tifare i tuoi cantanti in classifica.'
+  }
+  const base = authStore.user?.is_team_locked
+    ? 'Squadra confermata, ma al momento puoi ancora modificarla.'
     : 'Scegli 2 adulti e 2 bambini per completare la tua squadra.'
-))
+  if (canEditTeam.value && store.hasDraftChanges) {
+    return `${base} Le modifiche verranno salvate solo dopo la conferma.`
+  }
+  return base
+})
 </script>
 
 <template>
@@ -109,7 +144,7 @@ const teamDescription = computed(() => (
           </div>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
           <div
             v-if="requiresTeamUpdate"
             class="status-badge rounded-full px-4 py-2 text-sm font-semibold"
@@ -122,20 +157,39 @@ const teamDescription = computed(() => (
           >
             Squadra bloccata
           </div>
-          <div
-            v-else-if="authStore.user?.is_team_locked"
-            class="status-badge rounded-full px-4 py-2 text-sm font-semibold"
-          >
-            Modifiche ancora aperte
-          </div>
-          <button
-            v-else
-            @click="handleLockTeam"
-            :disabled="!store.isTeamComplete"
-            class="gold-button rounded-xl px-4 py-2 text-sm font-semibold transition"
-          >
-            Conferma squadra
-          </button>
+          <template v-else>
+            <div
+              v-if="authStore.user?.is_team_locked"
+              class="status-badge rounded-full px-4 py-2 text-sm font-semibold"
+            >
+              Modifiche ancora aperte
+            </div>
+            <button
+              v-if="canEditTeam && !authStore.user?.is_team_locked"
+              type="button"
+              @click="handleConfirmTeam"
+              :disabled="!store.isTeamComplete"
+              class="gold-button rounded-xl px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Conferma squadra
+            </button>
+            <button
+              v-if="canEditTeam && authStore.user?.is_team_locked && store.isTeamComplete && store.hasDraftChanges"
+              type="button"
+              @click="handleConfirmTeam"
+              class="gold-button rounded-xl px-4 py-2 text-sm font-semibold transition"
+            >
+              Conferma modifiche
+            </button>
+            <button
+              v-if="canEditTeam && store.hasDraftChanges"
+              type="button"
+              @click="handleDiscardDraft"
+              class="ghost-button rounded-xl px-4 py-2 text-sm font-semibold transition"
+            >
+              Annulla modifiche
+            </button>
+          </template>
         </div>
       </div>
     </div>
@@ -147,14 +201,11 @@ const teamDescription = computed(() => (
           <p class="gold-copy mt-1 text-sm">
             {{ teamDescription }}
           </p>
-          <p class="gold-muted mt-2 text-sm">
-            La squadra è valida solo quando contiene esattamente 2 adulti e 2 bambini.
-          </p>
         </div>
       </div>
 
       <div
-        v-if="store.userTeam.length === 0"
+        v-if="displayedTeam.length === 0"
         class="empty-card rounded-2xl p-8 text-center italic"
       >
         Non hai ancora scelto nessun cantante. Parti dalla lista qui sotto.
@@ -162,42 +213,45 @@ const teamDescription = computed(() => (
 
       <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div
-          v-for="singer in store.userTeam"
+          v-for="singer in displayedTeam"
           :key="singer.id"
-          class="surface-card group relative rounded-2xl border-l-4 border-[#d4af37] p-4"
+          class="surface-card relative rounded-2xl border-l-4 border-[#d4af37] p-4"
         >
-          <button
-            v-if="canEditTeam"
-            @click="removeSinger(singer.id)"
-            class="absolute right-3 top-3 text-sm font-medium text-[#f2a8a3] opacity-0 transition group-hover:opacity-100"
-          >
-            Rimuovi
-          </button>
-          <div class="mb-3 flex items-center justify-center">
-            <img
-              v-if="singerPhotoSrc(singer)"
-              :src="singerPhotoSrc(singer)"
-              :alt="singer.name"
-              class="h-20 w-20 rounded-full border-2 border-[#d4af37] object-cover"
+          <div class="relative">
+            <button
+              v-if="canEditTeam"
+              type="button"
+              @click="removeSinger(singer.id)"
+              class="ghost-button absolute right-0 top-0 z-[2] rounded-lg px-3 py-1.5 text-xs font-semibold transition"
             >
-            <div
-              v-else
-              class="flex h-20 w-20 items-center justify-center rounded-full border-2 border-[#d4af37] bg-[rgba(255,255,255,0.06)] text-lg font-bold text-[#c9ab67]"
-              aria-hidden="true"
-            >
-              {{ singerInitial(singer) }}
+              Rimuovi
+            </button>
+            <div class="mb-3 flex items-center justify-center">
+              <img
+                v-if="singerPhotoSrc(singer)"
+                :src="singerPhotoSrc(singer)"
+                :alt="singer.name"
+                class="h-20 w-20 rounded-full border-2 border-[#d4af37] object-cover"
+              >
+              <div
+                v-else
+                class="flex h-20 w-20 items-center justify-center rounded-full border-2 border-[#d4af37] bg-[rgba(255,255,255,0.06)] text-lg font-bold text-[#c9ab67]"
+                aria-hidden="true"
+              >
+                {{ singerInitial(singer) }}
+              </div>
             </div>
-          </div>
-          <div class="text-center text-lg font-bold text-[#fff0cf]">{{ singer.name }}</div>
-          <div class="mt-1 text-center text-sm font-semibold text-[#ffe09a]">{{ singer.song_title }}</div>
-          <div
-            v-if="singer.description"
-            class="gold-muted mx-auto mt-2 max-w-xs text-center text-xs leading-5"
-          >
-            {{ singer.description }}
-          </div>
-          <div class="gold-pill mx-auto mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold">
-            {{ singer.category === 'bambini' ? 'Bambini' : 'Adulti' }}
+            <div class="text-center text-lg font-bold text-[#fff0cf]">{{ singer.name }}</div>
+            <div class="mt-1 text-center text-sm font-semibold text-[#ffe09a]">{{ singer.song_title }}</div>
+            <div
+              v-if="singer.description"
+              class="gold-muted mx-auto mt-2 max-w-xs text-center text-xs leading-5"
+            >
+              {{ singer.description }}
+            </div>
+            <div class="gold-pill mx-auto mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold">
+              {{ singer.category === 'bambini' ? 'Bambini' : 'Adulti' }}
+            </div>
           </div>
         </div>
       </div>
@@ -257,6 +311,7 @@ const teamDescription = computed(() => (
               </div>
 
               <button
+                type="button"
                 @click="addSinger(singer)"
                 :disabled="isSingerSelected(singer.id) || !canSelectSinger(singer)"
                 class="mt-2 w-full rounded-xl px-4 py-2 text-sm font-semibold transition-colors"
@@ -264,7 +319,7 @@ const teamDescription = computed(() => (
                   ? 'cursor-not-allowed border border-[rgba(224,191,115,0.12)] bg-[rgba(255,255,255,0.03)] text-[#6f6042]'
                   : 'gold-button'"
               >
-                {{ isSingerSelected(singer.id) ? 'Selezionato' : `Aggiungi tra gli ${section.title.toLowerCase()}` }}
+                {{ isSingerSelected(singer.id) ? 'Selezionato' : 'Aggiungi' }}
               </button>
             </div>
           </div>
@@ -273,4 +328,3 @@ const teamDescription = computed(() => (
     </section>
   </div>
 </template>
-
