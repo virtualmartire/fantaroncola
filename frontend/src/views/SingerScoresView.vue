@@ -13,15 +13,22 @@ const fetchSingerScores = async () => {
         const rightOrder = parseInt(right.display_order, 10) || Number.MAX_SAFE_INTEGER
         return leftOrder - rightOrder
       })
-      .map((singer) => ({
-        id: singer.id,
-        name: singer.name,
-        songTitle: singer.song_title,
-        description: singer.description,
-        day1: parseInt(singer.day1_score, 10) || 0,
-        day2: parseInt(singer.day2_score, 10) || 0,
-        day3: parseInt(singer.day3_score, 10) || 0,
-      }))
+      .map((singer) => {
+        const day1 = parseInt(singer.day1_score, 10) || 0
+        const day2 = parseInt(singer.day2_score, 10) || 0
+        const day3 = parseInt(singer.day3_score, 10) || 0
+
+        return {
+          id: singer.id,
+          name: singer.name,
+          songTitle: singer.song_title,
+          description: singer.description,
+          day1,
+          day2,
+          day3,
+          total: day1 + day2 + day3,
+        }
+      })
   } catch (error) {
     console.error('Errore nel caricamento dei punteggi dei cantanti:', error)
   }
@@ -50,18 +57,22 @@ onMounted(() => {
       <table class="w-full table-fixed border-collapse">
         <thead>
           <tr class="bg-[rgba(255,255,255,0.03)] text-left text-xs uppercase tracking-[0.16em] text-[#c9ab67]">
-            <th class="w-[46%] px-3 py-4 font-semibold sm:px-6">Cantante</th>
-            <th class="w-[18%] px-2 py-4 text-center font-semibold sm:px-4">
+            <th class="w-[32%] px-3 py-4 font-semibold sm:px-6">Cantante</th>
+            <th class="w-[17%] px-2 py-4 text-center font-semibold sm:px-4">
               <span class="sm:hidden">S1</span>
               <span class="hidden sm:inline">Serata 1</span>
             </th>
-            <th class="w-[18%] px-2 py-4 text-center font-semibold sm:px-4">
+            <th class="w-[17%] px-2 py-4 text-center font-semibold sm:px-4">
               <span class="sm:hidden">S2</span>
               <span class="hidden sm:inline">Serata 2</span>
             </th>
-            <th class="w-[18%] px-2 py-4 text-center font-semibold sm:px-4">
+            <th class="w-[17%] px-2 py-4 text-center font-semibold sm:px-4">
               <span class="sm:hidden">S3</span>
               <span class="hidden sm:inline">Serata 3</span>
+            </th>
+            <th class="w-[17%] px-2 py-4 text-center font-semibold sm:px-4">
+              <span class="sm:hidden">Tot</span>
+              <span class="hidden sm:inline">Totale</span>
             </th>
           </tr>
         </thead>
@@ -91,6 +102,7 @@ onMounted(() => {
             <td class="px-2 py-4 text-center text-sm font-medium text-[#ead7af] sm:px-4">{{ singer.day1 }}</td>
             <td class="px-2 py-4 text-center text-sm font-medium text-[#ead7af] sm:px-4">{{ singer.day2 }}</td>
             <td class="px-2 py-4 text-center text-sm font-medium text-[#ead7af] sm:px-4">{{ singer.day3 }}</td>
+            <td class="px-2 py-4 text-center text-sm font-semibold text-[#f4deb1] sm:px-4">{{ singer.total }}</td>
           </tr>
         </tbody>
       </table>
