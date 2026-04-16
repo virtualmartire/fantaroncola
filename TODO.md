@@ -7,7 +7,7 @@
 [x] pagina con i punteggi dei cantanti
 [x] finire lista cantanti
 [x] regolamento
-[] rileggere tutto
+[x] rileggere tutto
 [] foto dei cantanti
 [] deploy su fantaroncola.it
 

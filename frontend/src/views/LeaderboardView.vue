@@ -59,10 +59,9 @@ onMounted(() => {
 <template>
   <div class="surface-card overflow-hidden rounded-2xl">
     <div class="px-4 py-5 sm:px-6">
-      <p class="gold-kicker text-sm font-semibold uppercase">Notte degli Oscar</p>
       <h1 class="mt-2 text-2xl font-black tracking-tight text-[#fff0cf]">Classifica</h1>
       <p class="gold-copy mt-1 max-w-2xl text-sm">
-        Una vista semplice dei punteggi per ciascuna serata, con evidenza speciale per i primi tre posti.
+        Vista dei punteggi di ogni utente per ciascuna serata.
       </p>
     </div>
 
