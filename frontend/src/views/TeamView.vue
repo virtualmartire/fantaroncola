@@ -85,9 +85,7 @@ const singerInitial = (singer) => {
 }
 
 const teamDescription = computed(() => (
-  requiresTeamUpdate.value
-    ? 'La tua squadra era stata confermata con le vecchie regole: aggiornala a 2 adulti e 2 bambini.'
-    : isTeamEditingDisabled.value
+  isTeamEditingDisabled.value
     ? 'Squadra confermata. Ora puoi seguirne l\'andamento e tifare i tuoi cantanti in classifica.'
     : authStore.user?.is_team_locked
       ? 'Squadra confermata, ma al momento puoi ancora modificarla.'

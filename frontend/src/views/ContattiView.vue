@@ -6,12 +6,11 @@ const instagramUrl =
 <template>
   <div class="space-y-8 py-2 sm:py-4">
     <div class="surface-card rounded-2xl px-5 py-6 sm:px-8 sm:py-8">
-      <p class="gold-kicker text-sm font-semibold uppercase">FantaRoncola</p>
       <h1 class="mt-2 text-2xl font-black tracking-tight text-[#fff0cf] sm:text-3xl">
         Contatti
       </h1>
       <p class="gold-copy mt-3 max-w-3xl text-sm leading-6">
-        Segui la Roncola su Instagram per aggiornamenti, serate e tutto ciò che ruota intorno al concorso.
+        Segui la Roncola su Instagram per gli aggiornamenti sulle serate e tutto ciò che ruota intorno al concorso.
       </p>
       <div class="mt-8">
         <a

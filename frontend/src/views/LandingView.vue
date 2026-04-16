@@ -35,7 +35,7 @@ const steps = [
 ]
 
 const strengths = [
-  'Perfetto per seguire un contest musicale con amici, community o colleghi.',
+  'Perfetto per seguire un contest musicale con amici e colleghi.',
   'Ogni scelta conta: bilancia bene le due categorie e punta sui cantanti giusti.',
   'Quando sei soddisfatto puoi bloccare la squadra e giocarti tutto fino alla fine.',
 ]
@@ -46,16 +46,13 @@ const strengths = [
     <section class="hero-surface overflow-hidden rounded-[2rem]">
       <div class="grid gap-10 px-6 py-10 sm:px-10 lg:grid-cols-[1.2fr_0.8fr] lg:px-12 lg:py-14">
         <div class="space-y-6">
-          <span class="gold-pill inline-flex items-center rounded-full px-4 py-1 text-sm font-medium backdrop-blur">
-            Fantaconcorso di cantanti
-          </span>
           <div class="space-y-4">
             <h1 class="max-w-3xl text-4xl font-black tracking-tight text-[#fff3db] sm:text-5xl">
-              Scegli la tua squadra e punta alla vetta di FantaRoncola.
+              Scegli la tua squadra e punta alla vetta del FantaRoncola.
             </h1>
             <p class="gold-copy max-w-2xl text-lg">
-              Una serata da red carpet trasformata in gioco: segui il concorso musicale con piu pathos,
-              selezioni 2 adulti e 2 bambini, confermi la rosa e aspetti che i punti facciano la differenza.
+              Una serata da red carpet trasformata in gioco. Segui il concorso musicale con più pathos:
+              seleziona 2 adulti e 2 bambini, conferma la rosa e aspetta che i punti facciano la differenza.
             </p>
           </div>
           <div class="flex flex-col gap-3 sm:flex-row">
@@ -109,15 +106,15 @@ const strengths = [
       </article>
     </section>
 
-    <section class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-      <div class="surface-card rounded-3xl p-8">
+    <section class="grid items-stretch gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <div class="surface-card flex h-full flex-col rounded-3xl p-8">
         <p class="gold-kicker text-sm font-semibold uppercase">
-          Perche partecipare
+          Perché partecipare
         </p>
         <h2 class="mt-3 text-3xl font-black tracking-tight text-[#fff0cf]">
           Il fantaconcorso che trasforma ogni esibizione in una scelta strategica.
         </h2>
-        <div class="mt-6 space-y-4">
+        <div class="mt-6 flex flex-1 flex-col space-y-4">
           <div
             v-for="item in strengths"
             :key="item"
@@ -128,25 +125,21 @@ const strengths = [
         </div>
       </div>
 
-      <div class="surface-card rounded-3xl p-8">
+      <div class="surface-card flex h-full flex-col rounded-3xl p-8">
         <p class="gold-kicker text-sm font-semibold uppercase">
           La tua missione
         </p>
-        <h2 class="mt-3 text-2xl font-black tracking-tight text-[#fff0cf]">
+        <h2 class="mt-3 text-3xl font-black tracking-tight text-[#fff0cf]">
           Costruisci la rosa migliore prima che i giochi siano fatti.
         </h2>
-        <p class="gold-copy mt-4 text-sm leading-6">
-          Scegli 2 adulti e 2 bambini, controlla la classifica e difendi il tuo posto
-          fino all'ultimo aggiornamento.
-        </p>
-        <div class="mt-8 space-y-3 text-sm text-[#ead7af]">
-          <div class="gold-stat rounded-2xl px-4 py-3">
+        <div class="mt-6 flex flex-1 flex-col space-y-4 text-sm leading-6 text-[#ead7af]">
+          <div class="gold-stat rounded-2xl px-5 py-4">
             Rosa da 4 cantanti: 2 adulti e 2 bambini.
           </div>
-          <div class="gold-stat rounded-2xl px-4 py-3">
-            Possibilita di bloccare la squadra quando sei convinto delle tue scelte.
+          <div class="gold-stat rounded-2xl px-5 py-4">
+            Blocca la squadra quando sei convinto delle tue scelte.
           </div>
-          <div class="gold-stat rounded-2xl px-4 py-3">
+          <div class="gold-stat rounded-2xl px-5 py-4">
             Classifica aggiornata in base ai punteggi del contest.
           </div>
         </div>
@@ -158,7 +151,7 @@ const strengths = [
         Pronto a giocarti il titolo?
       </h2>
       <p class="gold-copy mx-auto mt-3 max-w-2xl text-base">
-        Entra in FantaRoncola, crea la tua squadra di cantanti e scopri chi domina il fantaconcorso.
+        Entra nel FantaRoncola, crea la tua squadra di cantanti e scopri chi domina il fantaconcorso.
       </p>
       <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
         <RouterLink

@@ -7,8 +7,8 @@
 [x] pagina con i punteggi dei cantanti
 [x] finire lista cantanti
 [x] regolamento
-[] foto dei cantanti
 [] rileggere tutto
+[] foto dei cantanti
 [] deploy su fantaroncola.it
 
 ## Bugs

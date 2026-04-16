@@ -47,32 +47,32 @@ watch(
               <RouterLink to="/regolamento" class="nav-link text-sm font-medium transition">
                 Regolamento
               </RouterLink>
-              <RouterLink to="/contatti" class="nav-link text-sm font-medium transition">
-                Contatti
-              </RouterLink>
               <RouterLink
-                v-if="authStore.isAuthenticated"
-                to="/team"
-                class="nav-link text-sm font-medium transition"
+              v-if="authStore.isAuthenticated"
+              to="/team"
+              class="nav-link text-sm font-medium transition"
               >
-                La mia squadra
-              </RouterLink>
-              <RouterLink
-                v-if="authStore.isAuthenticated"
-                to="/leaderboard"
-                class="nav-link text-sm font-medium transition"
-              >
-                Classifica
-              </RouterLink>
-              <RouterLink
-                v-if="authStore.isAuthenticated"
-                to="/punteggi-cantanti"
-                class="nav-link text-sm font-medium transition"
-              >
-                Punti cantanti
-              </RouterLink>
-              <RouterLink
-                v-if="authStore.user?.is_admin"
+              La mia squadra
+            </RouterLink>
+            <RouterLink
+            v-if="authStore.isAuthenticated"
+            to="/leaderboard"
+            class="nav-link text-sm font-medium transition"
+            >
+            Classifica
+          </RouterLink>
+          <RouterLink
+          v-if="authStore.isAuthenticated"
+          to="/punteggi-cantanti"
+          class="nav-link text-sm font-medium transition"
+          >
+          Punti cantanti
+        </RouterLink>
+        <RouterLink to="/contatti" class="nav-link text-sm font-medium transition">
+          Contatti
+        </RouterLink>
+        <RouterLink
+        v-if="authStore.user?.is_admin"
                 to="/admin"
                 class="nav-link text-sm font-medium transition"
               >
@@ -84,7 +84,7 @@ watch(
           <div class="hidden items-center gap-4 sm:flex">
             <template v-if="authStore.isAuthenticated">
               <span class="gold-copy text-sm">
-                Benvenuto, <span class="font-semibold">{{ authStore.user?.username }}</span>
+                Rieccoti, <span class="font-semibold">{{ authStore.user?.username }}</span>
               </span>
               <button
                 @click="handleLogout"
@@ -203,7 +203,7 @@ watch(
           <div class="mt-3 border-t border-[rgba(224,191,115,0.12)] pt-3">
             <template v-if="authStore.isAuthenticated">
               <p class="gold-copy px-3 text-sm">
-                Benvenuto, <span class="font-semibold">{{ authStore.user?.username }}</span>
+                Rieccoti, <span class="font-semibold">{{ authStore.user?.username }}</span>
               </p>
               <button
                 @click="handleLogout"
