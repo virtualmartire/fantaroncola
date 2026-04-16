@@ -31,7 +31,7 @@ watch(
 </script>
 
 <template>
-  <div class="app-shell">
+  <div class="app-shell flex min-h-screen flex-col">
     <header class="main-nav">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex min-h-16 items-center justify-between gap-4">
@@ -216,10 +216,26 @@ watch(
       </div>
     </header>
 
-    <main>
+    <main class="flex-1">
       <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <RouterView />
       </div>
     </main>
+
+    <footer class="site-footer">
+      <div class="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
+        <p class="text-center text-xs tracking-wide text-[var(--text-faint)]">
+          Sviluppato da
+          <a
+            href="https://stefano.martire.xyz"
+            class="text-[var(--text-faint)] transition hover:text-[var(--text-soft)]"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Stefano Martire
+          </a>
+        </p>
+      </div>
+    </footer>
   </div>
 </template>
