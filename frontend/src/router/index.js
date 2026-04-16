@@ -17,6 +17,11 @@ const router = createRouter({
       component: () => import('../views/RegolamentoView.vue'),
     },
     {
+      path: '/contatti',
+      name: 'contatti',
+      component: () => import('../views/ContattiView.vue'),
+    },
+    {
       path: '/accedi',
       name: 'auth',
       component: HomeView,

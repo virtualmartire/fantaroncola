@@ -47,6 +47,9 @@ watch(
               <RouterLink to="/regolamento" class="nav-link text-sm font-medium transition">
                 Regolamento
               </RouterLink>
+              <RouterLink to="/contatti" class="nav-link text-sm font-medium transition">
+                Contatti
+              </RouterLink>
               <RouterLink
                 v-if="authStore.isAuthenticated"
                 to="/team"
@@ -155,6 +158,13 @@ watch(
               @click="closeMobileMenu"
             >
               Regolamento
+            </RouterLink>
+            <RouterLink
+              to="/contatti"
+              class="nav-link rounded-xl px-3 py-2 text-sm font-medium transition"
+              @click="closeMobileMenu"
+            >
+              Contatti
             </RouterLink>
             <RouterLink
               v-if="authStore.isAuthenticated"
