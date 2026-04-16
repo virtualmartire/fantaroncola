@@ -5,10 +5,11 @@ const svgCaptcha = require('svg-captcha');
 
 exports.getCaptcha = (req, res) => {
   const captcha = svgCaptcha.create({
-    size: 5,
-    noise: 3,
-    color: true,
+    size: 4,
+    noise: 1,
+    color: false,
     background: '#120d09',
+    ignoreChars: '0oO1ilI',
   });
 
   req.session.captcha = captcha.text.toLowerCase();
