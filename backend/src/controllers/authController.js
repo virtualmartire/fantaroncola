@@ -2,6 +2,7 @@ const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const svgCaptcha = require('svg-captcha');
+const env = require('../config/env');
 
 exports.getCaptcha = (req, res) => {
   const captcha = svgCaptcha.create({
@@ -48,7 +49,7 @@ exports.register = async (req, res) => {
     );
 
     // Create token
-    const token = jwt.sign({ id: newUser.rows[0].id }, process.env.JWT_SECRET || 'secret', {
+    const token = jwt.sign({ id: newUser.rows[0].id }, env.jwtSecret, {
       expiresIn: '1d',
     });
 
@@ -86,7 +87,7 @@ exports.login = async (req, res) => {
     }
 
     // Return token
-    const token = jwt.sign({ id: user.rows[0].id }, process.env.JWT_SECRET || 'secret', {
+    const token = jwt.sign({ id: user.rows[0].id }, env.jwtSecret, {
       expiresIn: '1d',
     });
 

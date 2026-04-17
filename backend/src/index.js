@@ -1,13 +1,15 @@
-require('dotenv').config();
-
 const bcrypt = require('bcryptjs');
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
+const RedisStore = require('connect-redis').RedisStore;
+const { createClient } = require('redis');
+const helmet = require('helmet');
 const fs = require('fs');
 const path = require('path');
 const app = express();
 const db = require('./config/db');
+const env = require('./config/env');
 const { syncPointsFromCsv } = require('./utils/syncPoints');
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const getSeedKey = (singer, index) => singer.seed_key || `slot-${index + 1}`;
@@ -15,9 +17,45 @@ const getLegacyPlaceholderName = (index) => `Singer ${String.fromCharCode(65 + i
 const getSingerSearchNames = (singer) => {
   return Array.from(new Set([singer.name, ...(singer.legacy_names || [])]));
 };
+const normalizeOrigin = (origin) => origin.replace(/\/+$/, '');
+const allowedOrigins = new Set(env.allowedOrigins.map(normalizeOrigin));
+let appConfigured = false;
+const resolveCorsOrigin = (origin, callback) => {
+  if (!origin) {
+    callback(null, true);
+    return;
+  }
+
+  if (!allowedOrigins.size || allowedOrigins.has(normalizeOrigin(origin))) {
+    callback(null, true);
+    return;
+  }
+
+  callback(new Error('Origin not allowed by CORS'));
+};
+const buildSessionStore = async () => {
+  if (!env.redisUrl) {
+    return undefined;
+  }
+
+  const redisClient = createClient({
+    url: env.redisUrl,
+  });
+
+  redisClient.on('error', (error) => {
+    console.error('Redis client error:', error.message);
+  });
+
+  await redisClient.connect();
+
+  return new RedisStore({
+    client: redisClient,
+    prefix: 'fantaroncola:',
+  });
+};
 const ensureAdminUser = async () => {
-  const adminUsername = process.env.ADMIN_USERNAME?.trim();
-  const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminUsername = env.adminUsername;
+  const adminPassword = env.adminPassword;
 
   if (!adminUsername || !adminPassword) {
     console.log('Admin bootstrap skipped: missing ADMIN_USERNAME or ADMIN_PASSWORD');
@@ -37,34 +75,51 @@ const ensureAdminUser = async () => {
   console.log(`Ensured admin user "${adminUsername}"`);
 };
 
-// Middleware
-app.set('trust proxy', 1);
-app.use(express.json());
-app.use(cors({
-  origin: true,
-  credentials: true,
-}));
-app.use(session({
-  name: 'fantaroncola.sid',
-  secret: process.env.SESSION_SECRET || 'fantaroncola-session-secret',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 1000 * 60 * 30,
-  },
-}));
+const configureApp = async () => {
+  if (appConfigured) {
+    return;
+  }
 
-// Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/singers', require('./routes/singerRoutes'));
-app.use('/api/team', require('./routes/teamRoutes'));
-app.use('/api/leaderboard', require('./routes/leaderboardRoutes'));
-app.use('/photos', express.static(path.join(__dirname, '../data/photos')));
+  const sessionStore = await buildSessionStore();
 
-const PORT = process.env.PORT || 3000;
+  app.set('trust proxy', env.trustProxy);
+  app.disable('x-powered-by');
+
+  app.use(helmet({
+    crossOriginResourcePolicy: false,
+  }));
+  app.use(express.json());
+  app.use(cors({
+    origin: resolveCorsOrigin,
+    credentials: true,
+  }));
+  app.use(session({
+    name: 'fantaroncola.sid',
+    secret: env.sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+    cookie: {
+      httpOnly: true,
+      sameSite: env.sessionCookieSameSite,
+      secure: env.sessionCookieSecure,
+      maxAge: 1000 * 60 * 30,
+    },
+  }));
+
+  app.get('/api/health', (_req, res) => {
+    res.json({ status: 'ok' });
+  });
+  app.use('/api/auth', require('./routes/authRoutes'));
+  app.use('/api/singers', require('./routes/singerRoutes'));
+  app.use('/api/team', require('./routes/teamRoutes'));
+  app.use('/api/leaderboard', require('./routes/leaderboardRoutes'));
+  app.use('/photos', express.static(path.join(__dirname, '../data/photos')));
+
+  appConfigured = true;
+};
+
+const PORT = env.port;
 const DB_INIT_MAX_ATTEMPTS = 15;
 const DB_INIT_RETRY_MS = 2000;
 
@@ -284,6 +339,7 @@ const initDb = async () => {
 const startServer = async () => {
   for (let attempt = 1; attempt <= DB_INIT_MAX_ATTEMPTS; attempt += 1) {
     try {
+      await configureApp();
       await initDb();
       app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);

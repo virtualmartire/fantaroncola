@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const auth = require('../middleware/auth');
+const authRateLimit = require('../middleware/authRateLimit');
 
 // @route   GET api/auth/captcha
 // @desc    Generate signup captcha
@@ -11,12 +12,12 @@ router.get('/captcha', authController.getCaptcha);
 // @route   POST api/auth/register
 // @desc    Register user
 // @access  Public
-router.post('/register', authController.register);
+router.post('/register', authRateLimit, authController.register);
 
 // @route   POST api/auth/login
 // @desc    Login user
 // @access  Public
-router.post('/login', authController.login);
+router.post('/login', authRateLimit, authController.login);
 
 // @route   GET api/auth/me
 // @desc    Get current user
