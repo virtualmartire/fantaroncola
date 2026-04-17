@@ -8,8 +8,8 @@
 [x] finire lista cantanti
 [x] regolamento
 [x] rileggere tutto
+[x] deploy su fantaroncola.it
 [] foto dei cantanti
-[] deploy su fantaroncola.it
 
 ## Bugs
 []
