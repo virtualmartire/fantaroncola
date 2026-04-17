@@ -20,12 +20,12 @@ const allowLockedTeamEdits = ref(false)
 const categorySections = computed(() => ([
   {
     key: 'adulti',
-    title: 'Adulti',
+    title: 'Adulti/e',
     singers: store.singers.filter((singer) => singer.category === 'adulti'),
   },
   {
     key: 'bambini',
-    title: 'Bambini',
+    title: 'Bambini/e',
     singers: store.singers.filter((singer) => singer.category === 'bambini'),
   },
 ]))
@@ -33,12 +33,12 @@ const categorySections = computed(() => ([
 const teamStatusCards = computed(() => ([
   {
     key: 'adulti',
-    title: 'Adulti scelti',
+    title: 'Adulti/e scelti',
     value: `${store.selectedCounts.adulti || 0} / ${store.teamLimits.adulti}`,
   },
   {
     key: 'bambini',
-    title: 'Bambini scelti',
+    title: 'Bambini/e scelti',
     value: `${store.selectedCounts.bambini || 0} / ${store.teamLimits.bambini}`,
   },
 ]))
@@ -120,7 +120,7 @@ const teamDescription = computed(() => {
   }
   const base = authStore.user?.is_team_locked
     ? 'Squadra confermata, ma al momento puoi ancora modificarla.'
-    : 'Scegli 2 adulti e 2 bambini per completare la tua squadra.'
+    : 'Scegli 2 adulti/e e 2 bambini/e per completare la tua squadra.'
   if (canEditTeam.value && store.hasDraftChanges) {
     return `${base} Le modifiche verranno salvate solo dopo la conferma.`
   }
@@ -250,7 +250,7 @@ const teamDescription = computed(() => {
               {{ singer.description }}
             </div>
             <div class="gold-pill mx-auto mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold">
-              {{ singer.category === 'bambini' ? 'Bambini' : 'Adulti' }}
+              {{ singer.category === 'bambini' ? 'Bambini/e' : 'Adulti/e' }}
             </div>
           </div>
         </div>
@@ -261,7 +261,7 @@ const teamDescription = computed(() => {
       <div class="mb-4">
         <h2 class="text-2xl font-black tracking-tight text-[#fff0cf]">Cantanti disponibili</h2>
         <p class="gold-copy mt-1 text-sm">
-          Scegli liberamente, ma la squadra deve avere esattamente 2 adulti e 2 bambini.
+          Scegli liberamente, ma la squadra deve avere esattamente 2 adulti/e e 2 bambini/e.
         </p>
       </div>
 

@@ -11,7 +11,7 @@ const highlights = [
   },
   {
     value: '2 + 2',
-    label: 'bambini e adulti da scegliere',
+    label: 'bambini/e e adulti/e da scegliere',
   },
   {
     value: 'Live',
@@ -26,7 +26,7 @@ const steps = [
   },
   {
     title: 'Scegli i tuoi artisti',
-    description: 'Componi una squadra con 2 adulti e 2 bambini.',
+    description: 'Componi una squadra con 2 adulti/e e 2 bambini/e.',
   },
   {
     title: 'Segui la classifica',
@@ -52,7 +52,7 @@ const strengths = [
             </h1>
             <p class="gold-copy max-w-2xl text-lg">
               Una serata da red carpet trasformata in gioco. Segui il concorso musicale con più pathos:
-              seleziona 2 adulti e 2 bambini, conferma la rosa e aspetta che i punti facciano la differenza.
+              seleziona 2 adulti/e e 2 bambini/e, conferma la rosa e aspetta che i punti facciano la differenza.
             </p>
           </div>
           <div class="flex flex-col gap-3 sm:flex-row">
@@ -134,7 +134,7 @@ const strengths = [
         </h2>
         <div class="mt-6 flex flex-1 flex-col space-y-4 text-sm leading-6 text-[#ead7af]">
           <div class="gold-stat rounded-2xl px-5 py-4">
-            Rosa da 4 cantanti: 2 adulti e 2 bambini.
+            Rosa da 4 cantanti/e: 2 adulti/e e 2 bambini/e.
           </div>
           <div class="gold-stat rounded-2xl px-5 py-4">
             Blocca la squadra quando sei convinto delle tue scelte.
