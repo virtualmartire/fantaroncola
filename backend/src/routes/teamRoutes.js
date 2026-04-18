@@ -9,6 +9,11 @@ const admin = require('../middleware/admin');
 // @access  Private
 router.get('/settings', auth, teamController.getTeamSettings);
 
+// @route   GET api/team/admin/stats
+// @desc    Get admin dashboard stats
+// @access  Private/Admin
+router.get('/admin/stats', auth, admin, teamController.getAdminStats);
+
 // @route   PUT api/team/settings
 // @desc    Update global team editing settings
 // @access  Private/Admin

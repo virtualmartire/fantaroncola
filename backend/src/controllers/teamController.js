@@ -64,10 +64,36 @@ const getCurrentTeamSettings = async () => {
   return result.rows[0] || { allow_locked_team_edits: true };
 };
 
+const getAdminStats = async () => {
+  const result = await db.query(
+    `SELECT
+       COUNT(*) FILTER (WHERE NOT is_admin) AS registered_users,
+       COUNT(*) FILTER (WHERE NOT is_admin AND is_team_locked) AS confirmed_teams
+     FROM users`
+  );
+
+  const row = result.rows[0] || {};
+
+  return {
+    registered_users: Number(row.registered_users || 0),
+    confirmed_teams: Number(row.confirmed_teams || 0),
+  };
+};
+
 exports.getTeamSettings = async (req, res) => {
   try {
     const settings = await getCurrentTeamSettings();
     res.json(settings);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: 'Errore del server' });
+  }
+};
+
+exports.getAdminStats = async (req, res) => {
+  try {
+    const stats = await getAdminStats();
+    res.json(stats);
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: 'Errore del server' });
