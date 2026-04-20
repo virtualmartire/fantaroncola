@@ -32,25 +32,35 @@ const subtitle = computed(() => {
   return 'Rientra in gioco, gestisci la rosa e controlla i punteggi del contest.'
 })
 
-const handleAuth = async () => {
+const handleLogin = async () => {
   error.value = ''
 
-  if (isRegistering.value && password.value !== confirmPassword.value) {
+  try {
+    await authStore.login(username.value, password.value)
+
+    if (authStore.isAuthenticated) {
+      router.push('/team')
+    }
+  } catch (err) {
+    error.value = err.message
+  }
+}
+
+const handleRegister = async () => {
+  error.value = ''
+
+  if (password.value !== confirmPassword.value) {
     error.value = 'Le password non coincidono'
     return
   }
 
-  if (isRegistering.value && !captchaAnswer.value.trim()) {
+  if (!captchaAnswer.value.trim()) {
     error.value = 'Inserisci il captcha per completare la registrazione'
     return
   }
 
   try {
-    if (isRegistering.value) {
-      await authStore.register(username.value, password.value, captchaAnswer.value)
-    } else {
-      await authStore.login(username.value, password.value)
-    }
+    await authStore.register(username.value, password.value, captchaAnswer.value)
 
     if (authStore.isAuthenticated) {
       router.push('/team')
@@ -58,14 +68,12 @@ const handleAuth = async () => {
   } catch (err) {
     error.value = err.message
 
-    if (isRegistering.value) {
-      captchaAnswer.value = ''
+    captchaAnswer.value = ''
 
-      try {
-        await refreshCaptcha()
-      } catch {
-        // Keep the original signup error visible if captcha refresh fails.
-      }
+    try {
+      await refreshCaptcha()
+    } catch {
+      // Keep the original signup error visible if captcha refresh fails.
     }
   }
 }
@@ -158,12 +166,77 @@ const toggleMode = async () => {
         </p>
       </div>
 
-      <form class="mt-8 space-y-6" autocomplete="on" @submit.prevent="handleAuth">
+      <form
+        v-if="!isRegistering"
+        key="login-form"
+        class="mt-8 space-y-6"
+        method="post"
+        action="/api/auth/login"
+        autocomplete="on"
+        @submit.prevent="handleLogin"
+      >
         <div class="space-y-4">
           <div>
-            <label for="username" class="field-label mb-2 block text-sm font-medium">Username</label>
+            <label for="login-username" class="field-label mb-2 block text-sm font-medium">Username</label>
             <input
-              id="username"
+              id="login-username"
+              v-model="username"
+              name="username"
+              type="text"
+              autocomplete="username"
+              autocapitalize="none"
+              autocorrect="off"
+              spellcheck="false"
+              required
+              class="field-input block px-4 py-3 shadow-sm transition"
+              placeholder="Inserisci il tuo username"
+            >
+          </div>
+
+          <div>
+            <label for="login-password" class="field-label mb-2 block text-sm font-medium">Password</label>
+            <input
+              id="login-password"
+              v-model="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              class="field-input block px-4 py-3 shadow-sm transition"
+              placeholder="Inserisci la password"
+            >
+          </div>
+        </div>
+
+        <div
+          v-if="error"
+          class="error-card rounded-2xl px-4 py-3 text-sm"
+        >
+          {{ error }}
+        </div>
+
+        <button
+          type="submit"
+          class="gold-button w-full rounded-xl px-4 py-3 text-sm font-semibold transition"
+        >
+          Accedi
+        </button>
+      </form>
+
+      <form
+        v-else
+        key="register-form"
+        class="mt-8 space-y-6"
+        method="post"
+        action="/api/auth/register"
+        autocomplete="on"
+        @submit.prevent="handleRegister"
+      >
+        <div class="space-y-4">
+          <div>
+            <label for="register-username" class="field-label mb-2 block text-sm font-medium">Username</label>
+            <input
+              id="register-username"
               v-model="username"
               name="username"
               type="text"
@@ -178,21 +251,20 @@ const toggleMode = async () => {
           </div>
 
           <div>
-            <label for="password" class="field-label mb-2 block text-sm font-medium">Password</label>
+            <label for="register-password" class="field-label mb-2 block text-sm font-medium">Password</label>
             <input
-              :key="isRegistering ? 'register-password' : 'login-password'"
-              id="password"
+              id="register-password"
               v-model="password"
               name="password"
               type="password"
-              :autocomplete="isRegistering ? 'new-password' : 'current-password'"
+              autocomplete="new-password"
               required
               class="field-input block px-4 py-3 shadow-sm transition"
-              :placeholder="isRegistering ? 'Crea una password' : 'Inserisci la password'"
+              placeholder="Crea una password"
             >
           </div>
 
-          <div v-if="isRegistering">
+          <div>
             <label for="confirm-password" class="field-label mb-2 block text-sm font-medium">
               Conferma password
             </label>
@@ -208,7 +280,7 @@ const toggleMode = async () => {
             >
           </div>
 
-          <div v-if="isRegistering" class="space-y-3">
+          <div class="space-y-3">
             <div class="flex items-center justify-between gap-3">
               <label class="field-label block text-sm font-medium">Captcha</label>
               <button
@@ -263,22 +335,22 @@ const toggleMode = async () => {
 
         <button
           type="submit"
-          :disabled="isRegistering && isCaptchaLoading"
+          :disabled="isCaptchaLoading"
           class="gold-button w-full rounded-xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {{ isRegistering ? 'Crea account' : 'Accedi' }}
+          Crea account
         </button>
-
-        <div class="gold-copy text-center text-sm">
-          <button
-            type="button"
-            @click="toggleMode"
-            class="text-button font-semibold transition"
-          >
-            {{ isRegistering ? 'Hai gia un account? Accedi' : 'Non hai ancora un account? Registrati' }}
-          </button>
-        </div>
       </form>
+
+      <div class="gold-copy mt-6 text-center text-sm">
+        <button
+          type="button"
+          @click="toggleMode"
+          class="text-button font-semibold transition"
+        >
+          {{ isRegistering ? 'Hai gia un account? Accedi' : 'Non hai ancora un account? Registrati' }}
+        </button>
+      </div>
     </section>
   </div>
 </template>
