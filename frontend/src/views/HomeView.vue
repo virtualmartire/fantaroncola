@@ -158,7 +158,7 @@ const toggleMode = async () => {
         </p>
       </div>
 
-      <form class="mt-8 space-y-6" @submit.prevent="handleAuth">
+      <form class="mt-8 space-y-6" autocomplete="on" @submit.prevent="handleAuth">
         <div class="space-y-4">
           <div>
             <label for="username" class="field-label mb-2 block text-sm font-medium">Username</label>
@@ -167,6 +167,10 @@ const toggleMode = async () => {
               v-model="username"
               name="username"
               type="text"
+              autocomplete="username"
+              autocapitalize="none"
+              autocorrect="off"
+              spellcheck="false"
               required
               class="field-input block px-4 py-3 shadow-sm transition"
               placeholder="Scegli il tuo username"
@@ -176,13 +180,15 @@ const toggleMode = async () => {
           <div>
             <label for="password" class="field-label mb-2 block text-sm font-medium">Password</label>
             <input
+              :key="isRegistering ? 'register-password' : 'login-password'"
               id="password"
               v-model="password"
               name="password"
               type="password"
+              :autocomplete="isRegistering ? 'new-password' : 'current-password'"
               required
               class="field-input block px-4 py-3 shadow-sm transition"
-              placeholder="Inserisci la password"
+              :placeholder="isRegistering ? 'Crea una password' : 'Inserisci la password'"
             >
           </div>
 
@@ -195,6 +201,7 @@ const toggleMode = async () => {
               v-model="confirmPassword"
               name="confirm-password"
               type="password"
+              autocomplete="new-password"
               required
               class="field-input block px-4 py-3 shadow-sm transition"
               placeholder="Ripeti la password"
