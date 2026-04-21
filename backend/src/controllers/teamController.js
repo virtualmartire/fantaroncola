@@ -5,6 +5,11 @@ const TEAM_LIMITS = {
   bambini: 2,
 };
 
+const DEFAULT_APP_SETTINGS = {
+  allow_locked_team_edits: true,
+  allow_new_user_signups: true,
+};
+
 const getTeamWithSingers = async (userId) => {
   const result = await db.query(
     `SELECT s.* FROM singers s
@@ -58,10 +63,14 @@ const getTeamAccessState = async (userId) => {
 
 const getCurrentTeamSettings = async () => {
   const result = await db.query(
-    'SELECT COALESCE(allow_locked_team_edits, TRUE) AS allow_locked_team_edits FROM app_settings WHERE id = 1'
+    `SELECT
+       COALESCE(allow_locked_team_edits, TRUE) AS allow_locked_team_edits,
+       COALESCE(allow_new_user_signups, TRUE) AS allow_new_user_signups
+     FROM app_settings
+     WHERE id = 1`
   );
 
-  return result.rows[0] || { allow_locked_team_edits: true };
+  return result.rows[0] || DEFAULT_APP_SETTINGS;
 };
 
 const getAdminStats = async () => {
@@ -101,27 +110,47 @@ exports.getAdminStats = async (req, res) => {
 };
 
 exports.updateTeamSettings = async (req, res) => {
-  const { allowLockedTeamEdits } = req.body;
+  const body = req.body || {};
+  const { allowLockedTeamEdits, allowNewUserSignups } = body;
+  const hasLockedTeamEditUpdate = Object.prototype.hasOwnProperty.call(body, 'allowLockedTeamEdits');
+  const hasNewUserSignupUpdate = Object.prototype.hasOwnProperty.call(body, 'allowNewUserSignups');
 
-  if (typeof allowLockedTeamEdits !== 'boolean') {
+  if (!hasLockedTeamEditUpdate && !hasNewUserSignupUpdate) {
+    return res.status(400).json({ message: 'Impostazione non valida' });
+  }
+
+  if (hasLockedTeamEditUpdate && typeof allowLockedTeamEdits !== 'boolean') {
+    return res.status(400).json({ message: 'Impostazione non valida' });
+  }
+
+  if (hasNewUserSignupUpdate && typeof allowNewUserSignups !== 'boolean') {
     return res.status(400).json({ message: 'Impostazione non valida' });
   }
 
   try {
+    const currentSettings = await getCurrentTeamSettings();
+    const nextAllowLockedTeamEdits = hasLockedTeamEditUpdate
+      ? allowLockedTeamEdits
+      : currentSettings.allow_locked_team_edits;
+    const nextAllowNewUserSignups = hasNewUserSignupUpdate
+      ? allowNewUserSignups
+      : currentSettings.allow_new_user_signups;
+
     const result = await db.query(
-      `INSERT INTO app_settings (id, allow_locked_team_edits)
-       VALUES (1, $1)
+      `INSERT INTO app_settings (id, allow_locked_team_edits, allow_new_user_signups)
+       VALUES (1, $1, $2)
        ON CONFLICT (id)
-       DO UPDATE SET allow_locked_team_edits = EXCLUDED.allow_locked_team_edits
-       RETURNING allow_locked_team_edits`,
-      [allowLockedTeamEdits]
+       DO UPDATE SET
+         allow_locked_team_edits = EXCLUDED.allow_locked_team_edits,
+         allow_new_user_signups = EXCLUDED.allow_new_user_signups
+       RETURNING allow_locked_team_edits, allow_new_user_signups`,
+      [nextAllowLockedTeamEdits, nextAllowNewUserSignups]
     );
 
     res.json({
-      message: allowLockedTeamEdits
-        ? 'Le squadre bloccate sono ora modificabili'
-        : 'Le squadre bloccate non sono piu modificabili',
+      message: 'Impostazioni aggiornate con successo',
       allow_locked_team_edits: result.rows[0].allow_locked_team_edits,
+      allow_new_user_signups: result.rows[0].allow_new_user_signups,
     });
   } catch (err) {
     console.error(err.message);

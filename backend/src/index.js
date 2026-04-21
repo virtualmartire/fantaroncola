@@ -148,7 +148,8 @@ const initDb = async () => {
   await db.query(`
     CREATE TABLE IF NOT EXISTS app_settings (
       id INTEGER PRIMARY KEY CHECK (id = 1),
-      allow_locked_team_edits BOOLEAN NOT NULL DEFAULT TRUE
+      allow_locked_team_edits BOOLEAN NOT NULL DEFAULT TRUE,
+      allow_new_user_signups BOOLEAN NOT NULL DEFAULT TRUE
     );
   `);
 
@@ -157,8 +158,24 @@ const initDb = async () => {
   );
 
   await db.query(
-    `INSERT INTO app_settings (id, allow_locked_team_edits)
-     VALUES (1, TRUE)
+    'ALTER TABLE app_settings ADD COLUMN IF NOT EXISTS allow_new_user_signups BOOLEAN DEFAULT TRUE'
+  );
+
+  await db.query(
+    'UPDATE app_settings SET allow_new_user_signups = TRUE WHERE allow_new_user_signups IS NULL'
+  );
+
+  await db.query(
+    'ALTER TABLE app_settings ALTER COLUMN allow_new_user_signups SET DEFAULT TRUE'
+  );
+
+  await db.query(
+    'ALTER TABLE app_settings ALTER COLUMN allow_new_user_signups SET NOT NULL'
+  );
+
+  await db.query(
+    `INSERT INTO app_settings (id, allow_locked_team_edits, allow_new_user_signups)
+     VALUES (1, TRUE, TRUE)
      ON CONFLICT (id) DO NOTHING`
   );
 

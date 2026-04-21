@@ -4,6 +4,16 @@ const jwt = require('jsonwebtoken');
 const svgCaptcha = require('svg-captcha');
 const env = require('../config/env');
 
+const areNewUserSignupsAllowed = async () => {
+  const result = await db.query(
+    `SELECT COALESCE(allow_new_user_signups, TRUE) AS allow_new_user_signups
+     FROM app_settings
+     WHERE id = 1`
+  );
+
+  return result.rows[0]?.allow_new_user_signups ?? true;
+};
+
 exports.getCaptcha = (req, res) => {
   const captcha = svgCaptcha.create({
     size: 4,
@@ -25,13 +35,18 @@ exports.register = async (req, res) => {
     return res.status(400).json({ message: 'Username, password e captcha sono obbligatori' });
   }
 
-  const expectedCaptcha = req.session?.captcha;
-  if (!expectedCaptcha || captcha.trim().toLowerCase() !== expectedCaptcha) {
-    req.session.captcha = null;
-    return res.status(400).json({ message: 'Captcha non valido. Riprova' });
-  }
-
   try {
+    const allowNewUserSignups = await areNewUserSignupsAllowed();
+    if (!allowNewUserSignups) {
+      return res.status(403).json({ message: 'Le nuove registrazioni sono disabilitate.' });
+    }
+
+    const expectedCaptcha = req.session?.captcha;
+    if (!expectedCaptcha || captcha.trim().toLowerCase() !== expectedCaptcha) {
+      req.session.captcha = null;
+      return res.status(400).json({ message: 'Captcha non valido. Riprova' });
+    }
+
     // Check if user exists
     const userCheck = await db.query('SELECT * FROM users WHERE username = $1', [username]);
     if (userCheck.rows.length > 0) {
