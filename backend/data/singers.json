@@ -1,11 +1,11 @@
 [
   {
-    "seed_key": "slot-15",
-    "name": "Lupei Stefanida",
-    "song_title": "Stella stellina - Ermal Meta",
-    "description": "Ninna nanna amara sulla guerra e sull'innocenza spezzata.",
-    "category": "bambini",
-    "image": null
+    "seed_key": "slot-5",
+    "name": "Allegra Gemito",
+    "song_title": "Hometown Glory - Adele",
+    "description": "Dichiarazione d'amore nostalgica alla propria citta.",
+    "category": "adulti",
+    "image": "/photos/allegra-gemito.jpg"
   },
   {
     "seed_key": "slot-16",
@@ -13,163 +13,7 @@
     "song_title": "Mamma - Claudio Villa",
     "description": "Omaggio tenero e riconoscente all'amore per la madre.",
     "category": "adulti",
-    "image": null
-  },
-  {
-    "seed_key": "slot-17",
-    "name": "Le vicine di casa",
-    "song_title": "Voila - Elettra",
-    "description": "Pop giocoso e passionale su un flirt impulsivo.",
-    "category": "adulti",
-    "image": null
-  },
-  {
-    "seed_key": "slot-1",
-    "name": "Marco Dosi",
-    "legacy_names": ["Dosi Marco"],
-    "song_title": "Questa domenica - Olly",
-    "description": "Ballata malinconica su un amore nato all'improvviso.",
-    "category": "adulti",
-    "image": null
-  },
-  {
-    "seed_key": "slot-18",
-    "name": "Francesca Bernardelli",
-    "song_title": "Quello che le donne non dicono - Fiorella Mannoia",
-    "description": "Ritratto intenso di forza, ferite e verita femminili.",
-    "category": "adulti",
-    "image": "/photos/francesca-bernardelli.jpeg"
-  },
-  {
-    "seed_key": "slot-19",
-    "name": "Davide Mesa",
-    "song_title": "Padre Madre - Cesare Cremonini",
-    "description": "Confessione intima tra amore familiare e bisogno di crescere.",
-    "category": "adulti",
-    "image": null
-  },
-  {
-    "seed_key": "slot-3",
-    "name": "Silvia Alessandrini e Adele Bona",
-    "legacy_names": ["Silvia e Adele"],
-    "song_title": "Simili - Laura Pausini",
-    "description": "Incontro tra anime fragili, diverse e profondamente simili.",
-    "category": "adulti",
-    "image": null
-  },
-  {
-    "seed_key": "slot-2",
-    "name": "Milena Tomacelli, Sara Palumbo, Silvia Tomacelli",
-    "legacy_names": ["Milena, Sara e Silvia"],
-    "song_title": "Tropicana - Gruppo Italiano",
-    "description": "Hit estiva ironica con un sottotesto di catastrofe.",
-    "category": "adulti",
-    "image": null
-  },
-  {
-    "seed_key": "slot-4",
-    "name": "Simone Garzon",
-    "song_title": "Rossetto e caffe - Sal Da Vinci",
-    "description": "Amore dolceamaro fatto di desiderio, assenza e ritorni.",
-    "category": "adulti",
-    "image": null
-  },
-  {
-    "seed_key": "slot-20",
-    "name": "Irene Massoletti, Massoletti Mario",
-    "song_title": "A bocca chiusa - Daniele Silvestri",
-    "description": "Inno civile alla partecipazione, anche senza voce.",
-    "category": "adulti",
-    "image": null
-  },
-  {
-    "seed_key": "slot-21",
-    "name": "Michela Bonomi",
-    "song_title": "Bianca - Noemi",
-    "description": "Fine di un amore vissuta con lucidita e speranza.",
-    "category": "bambini",
-    "image": null
-  },
-  {
-    "seed_key": "slot-22",
-    "name": "Gaia Meringolo",
-    "song_title": "La pace oh",
-    "description": "Canto semplice sulla pace come serenita condivisa.",
-    "category": "bambini",
-    "image": "/photos/gaia-meringolo.jpeg"
-  },
-  {
-    "seed_key": "slot-23",
-    "name": "Mattia Meringolo",
-    "song_title": "Laguna - Nicolo Filippucci",
-    "description": "Ballata sulla fine tossica di un amore che resta.",
-    "category": "bambini",
-    "image": "/photos/mattia-meringolo.jpeg"
-  },
-  {
-    "seed_key": "slot-9",
-    "name": "Donato Rendina",
-    "song_title": "Avvoltoi - Eddie Brock",
-    "description": "Amore non corrisposto e rabbia verso chi ferisce.",
-    "category": "bambini",
-    "image": null
-  },
-  {
-    "seed_key": "slot-5",
-    "name": "Allegra Gemito",
-    "song_title": "Hometown Glory - Adele",
-    "description": "Dichiarazione d'amore nostalgica alla propria citta.",
-    "category": "adulti",
-    "image": null
-  },
-  {
-    "seed_key": "slot-24",
-    "name": "Martina Deltratti",
-    "song_title": "La sera dei miracoli (base personale)",
-    "description": "Notte urbana magica, poetica e piena di meraviglia.",
-    "category": "adulti",
-    "image": null
-  },
-  {
-    "seed_key": "slot-25",
-    "name": "Thomas Marrella",
-    "song_title": "Pensa - Fabrizio Moro",
-    "description": "Invito coraggioso contro mafia, violenza e indifferenza.",
-    "category": "bambini",
-    "image": null
-  },
-  {
-    "seed_key": "slot-6",
-    "name": "Marco Caragiulo",
-    "song_title": "End of beginning - Djo",
-    "description": "Nostalgia per il passato e per la citta che ti forma.",
-    "category": "adulti",
-    "image": null
-  },
-  {
-    "seed_key": "slot-10",
-    "name": "Riccardo Reboldi e Pini Danilo",
-    "legacy_names": ["Riccardo e Danilo"],
-    "song_title": "Pronto come va - The Kolors",
-    "description": "Nostalgia telefonica per un amore finito ma presente.",
-    "category": "bambini",
-    "image": null
-  },
-  {
-    "seed_key": "slot-11",
-    "name": "Tecla Ferrari",
-    "song_title": "Sinceramente - Annalisa",
-    "description": "Richiesta di liberta emotiva e autenticita in amore.",
-    "category": "bambini",
-    "image": null
-  },
-  {
-    "seed_key": "slot-12",
-    "name": "Ex ragnetti",
-    "song_title": "Onda Alta - Dargen D'Amico",
-    "description": "Brano dance che racconta migranti e umanita ferita.",
-    "category": "bambini",
-    "image": null
+    "image": "/photos/claudio-beretti.jpg"
   },
   {
     "seed_key": "slot-26",
@@ -180,6 +24,145 @@
     "image": "/photos/daniel-corna.jpeg"
   },
   {
+    "seed_key": "slot-7",
+    "name": "Daria Lazar",
+    "song_title": "Per sempre - Nilla Zilli",
+    "description": "Promessa d'amore eterno tra orgoglio, mancanza e ritorno.",
+    "category": "adulti",
+    "image": "/photos/daria-lazar.jpeg"
+  },
+  {
+    "seed_key": "slot-19",
+    "name": "Davide Mesa",
+    "song_title": "Padre Madre - Cesare Cremonini",
+    "description": "Confessione intima tra amore familiare e bisogno di crescere.",
+    "category": "adulti",
+    "image": "/photos/davide-mesa.jpg"
+  },
+  {
+    "seed_key": "slot-20",
+    "name": "Di padre in figlia",
+    "song_title": "A bocca chiusa - Daniele Silvestri",
+    "description": "Inno civile alla partecipazione, anche senza voce.",
+    "category": "adulti",
+    "image": "/photos/di-padre-in-figlia.jpeg"
+  },
+  {
+    "seed_key": "slot-9",
+    "name": "Donato Rendina",
+    "song_title": "Avvoltoi - Eddie Brock",
+    "description": "Amore non corrisposto e rabbia verso chi ferisce.",
+    "category": "bambini",
+    "image": "/photos/donato-rendina.jpg"
+  },
+  {
+    "seed_key": "slot-18",
+    "name": "Francesca Bernardelli",
+    "song_title": "Quello che le donne non dicono - Fiorella Mannoia",
+    "description": "Ritratto intenso di forza, ferite e verita femminili.",
+    "category": "adulti",
+    "image": "/photos/francesca-bernardelli.jpeg"
+  },
+  {
+    "seed_key": "slot-22",
+    "name": "Gaia Meringolo",
+    "song_title": "La pace oh",
+    "description": "Canto semplice sulla pace come serenita condivisa.",
+    "category": "bambini",
+    "image": "/photos/gaia-meringolo.jpeg"
+  },
+  {
+    "seed_key": "slot-17",
+    "name": "Le vicine di casa",
+    "song_title": "Voila - Elettra",
+    "description": "Pop giocoso e passionale su un flirt impulsivo.",
+    "category": "adulti",
+    "image": "/photos/le-vicine-di-casa.jpg"
+  },
+  {
+    "seed_key": "slot-6",
+    "name": "Marco Caragiulo",
+    "song_title": "End of beginning - Djo",
+    "description": "Nostalgia per il passato e per la citta che ti forma.",
+    "category": "adulti",
+    "image": "/photos/marco-caragiulo.jpeg"
+  },
+  {
+    "seed_key": "slot-1",
+    "name": "Marco Dosi",
+    "song_title": "Questa domenica - Olly",
+    "description": "Ballata malinconica su un amore nato all'improvviso.",
+    "category": "adulti",
+    "image": "/photos/marco-dosi.jpg"
+  },
+  {
+    "seed_key": "slot-24",
+    "name": "Martina Deltratti",
+    "song_title": "La sera dei miracoli (base personale)",
+    "description": "Notte urbana magica, poetica e piena di meraviglia.",
+    "category": "adulti",
+    "image": "/photos/martina-deltratti.jpg"
+  },
+  {
+    "seed_key": "slot-23",
+    "name": "Mattia Meringolo",
+    "song_title": "Laguna - Nicolo Filippucci",
+    "description": "Ballata sulla fine tossica di un amore che resta.",
+    "category": "bambini",
+    "image": "/photos/mattia-meringolo.jpeg"
+  },
+  {
+    "seed_key": "slot-14",
+    "name": "Melissa Lazar",
+    "song_title": "Oltre l'orizzonte - Oceania",
+    "description": "Desiderio di liberta oltre i confini del proprio mondo.",
+    "category": "bambini",
+    "image": "/photos/melissa-lazar.jpeg"
+  },
+  {
+    "seed_key": "slot-21",
+    "name": "Michela Bonomi",
+    "song_title": "Bianca - Noemi",
+    "description": "Fine di un amore vissuta con lucidita e speranza.",
+    "category": "bambini",
+    "image": "/photos/michela-bonomi.jpg"
+  },
+  {
+    "seed_key": "slot-12",
+    "name": "Mini Italia band",
+    "song_title": "Onda Alta - Dargen D'Amico",
+    "description": "Brano dance che racconta migranti e umanita ferita.",
+    "category": "bambini",
+    "image": "/photos/mini-italia-band.jpeg"
+  },
+  {
+    "seed_key": "slot-10",
+    "name": "Riccardo e Danilo",
+    "legacy_names": ["Riccardo e Danilo"],
+    "song_title": "Pronto come va - The Kolors",
+    "description": "Nostalgia telefonica per un amore finito ma presente.",
+    "category": "bambini",
+    "image": "/photos/riccardo-e-danilo.jpg"
+  },
+  {
+    "seed_key": "slot-2",
+    "name": "Sara, Milena e Silvia",
+    "legacy_names": ["Milena, Sara e Silvia"],
+    "song_title": "Tropicana - Gruppo Italiano",
+    "description": "Hit estiva ironica con un sottotesto di catastrofe.",
+    "category": "adulti",
+    "image": "/photos/sara-milena-e-silvia.jpg"
+  },
+  {
+    "seed_key": "slot-3",
+    "name": "Silvia e Adele",
+    "legacy_names": ["Silvia e Adele"],
+    "song_title": "Simili - Laura Pausini",
+    "description": "Incontro tra anime fragili, diverse e profondamente simili.",
+    "category": "adulti",
+    "image": "/photos/silvia-e-adele.jpg"
+  },
+  {
     "seed_key": "slot-13",
     "name": "Simone Floris",
     "song_title": "Una canzone d'amore - 883",
@@ -188,19 +171,35 @@
     "image": "/photos/simone-floris.jpeg"
   },
   {
-    "seed_key": "slot-7",
-    "name": "Daria Lazar",
-    "song_title": "Per sempre - Nilla Zilli",
-    "description": "Promessa d'amore eterno tra orgoglio, mancanza e ritorno.",
+    "seed_key": "slot-4",
+    "name": "Simone Garzon",
+    "song_title": "Rossetto e caffe - Sal Da Vinci",
+    "description": "Amore dolceamaro fatto di desiderio, assenza e ritorni.",
     "category": "adulti",
-    "image": null
+    "image": "/photos/simone-garzon.jpg"
   },
   {
-    "seed_key": "slot-14",
-    "name": "Melissa Lazar",
-    "song_title": "Oltre l'orizzonte - Oceania",
-    "description": "Desiderio di liberta oltre i confini del proprio mondo.",
+    "seed_key": "slot-15",
+    "name": "Stefanida Lupei",
+    "song_title": "Stella stellina - Ermal Meta",
+    "description": "Ninna nanna amara sulla guerra e sull'innocenza spezzata.",
     "category": "bambini",
-    "image": null
+    "image": "/photos/stefanida-lupei.jpg"
+  },
+  {
+    "seed_key": "slot-11",
+    "name": "Tecla Ferrari",
+    "song_title": "Sinceramente - Annalisa",
+    "description": "Richiesta di liberta emotiva e autenticita in amore.",
+    "category": "bambini",
+    "image": "/photos/tecla-ferrari.jpg"
+  },
+  {
+    "seed_key": "slot-25",
+    "name": "Thomas Marrella",
+    "song_title": "Pensa - Fabrizio Moro",
+    "description": "Invito coraggioso contro mafia, violenza e indifferenza.",
+    "category": "bambini",
+    "image": "/photos/thomas-marrella.jpg"
   }
 ]
