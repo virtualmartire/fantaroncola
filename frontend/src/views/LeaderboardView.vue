@@ -39,7 +39,9 @@ const getBadgeClass = (rank) => {
 const fetchLeaderboard = async () => {
   try {
     const data = await api.get('/leaderboard')
-    leaderboard.value = data.map((entry, index) => {
+    leaderboard.value = data
+      .filter((entry) => entry.username?.trim().toLowerCase() !== 'admin')
+      .map((entry, index) => {
       const day1 = parseInt(entry.day1_score, 10) || 0
       const day2 = parseInt(entry.day2_score, 10) || 0
       const day3 = parseInt(entry.day3_score, 10) || 0
@@ -52,7 +54,7 @@ const fetchLeaderboard = async () => {
         day3,
         total: day1 + day2 + day3,
       }
-    })
+      })
   } catch (error) {
     console.error('Errore nel caricamento della classifica:', error)
   }
