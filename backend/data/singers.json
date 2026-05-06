@@ -26,16 +26,16 @@
   {
     "seed_key": "slot-7",
     "name": "Daria Lazar",
-    "song_title": "Per sempre - Nilla Zilli",
-    "description": "Promessa d'amore eterno tra orgoglio, mancanza e ritorno.",
+    "song_title": "Creep - Radiohead",
+    "description": "Confessione ruvida di inadeguatezza, desiderio e bisogno di essere amati.",
     "category": "adulti",
     "image": "/photos/daria-lazar.jpeg"
   },
   {
     "seed_key": "slot-19",
     "name": "Davide Mesa",
-    "song_title": "Padre Madre - Cesare Cremonini",
-    "description": "Confessione intima tra amore familiare e bisogno di crescere.",
+    "song_title": "Crazy Little Thing Called Love - Queen",
+    "description": "Rock spensierato su un amore improvviso, travolgente e incontrollabile.",
     "category": "adulti",
     "image": "/photos/davide-mesa.jpg"
   },
@@ -66,7 +66,7 @@
   {
     "seed_key": "slot-22",
     "name": "Gaia Meringolo",
-    "song_title": "La pace oh",
+    "song_title": "La pace oh - Piccolo Coro dell'Antoniano",
     "description": "Canto semplice sulla pace come serenita condivisa.",
     "category": "bambini",
     "image": "/photos/gaia-meringolo.jpeg"
@@ -99,7 +99,7 @@
   {
     "seed_key": "slot-24",
     "name": "Martina Deltratti",
-    "song_title": "La sera dei miracoli (base personale)",
+    "song_title": "La sera dei miracoli (base personale) - Lucio Dalla",
     "description": "Notte urbana magica, poetica e piena di meraviglia.",
     "category": "adulti",
     "image": "/photos/martina-deltratti.jpg"
@@ -182,8 +182,8 @@
   {
     "seed_key": "slot-15",
     "name": "Stefanida Lupei",
-    "song_title": "Stella stellina - Ermal Meta",
-    "description": "Ninna nanna amara sulla guerra e sull'innocenza spezzata.",
+    "song_title": "Diamante - Giorgia",
+    "description": "Inno delicato a speranza, rinascita e legami che restano.",
     "category": "bambini",
     "image": "/photos/stefanida-lupei.jpg"
   },
