@@ -13,13 +13,14 @@ const parseResponse = async (response) => {
 
 export const api = {
   async request(endpoint, method = 'GET', body = null, token = null) {
-    const headers = {
-      'Content-Type': 'application/json',
+    const headers = {}
+
+    if (body !== null) {
+      headers['Content-Type'] = 'application/json'
     }
 
-    const authToken = token || localStorage.getItem('token')
-    if (authToken) {
-      headers['x-auth-token'] = authToken
+    if (token) {
+      headers['x-auth-token'] = token
     }
 
     const config = {
@@ -28,7 +29,7 @@ export const api = {
       credentials: 'include',
     }
 
-    if (body) {
+    if (body !== null) {
       config.body = JSON.stringify(body)
     }
 

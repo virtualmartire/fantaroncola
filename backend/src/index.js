@@ -98,6 +98,7 @@ const configureApp = async () => {
     secret: env.sessionSecret,
     resave: false,
     saveUninitialized: false,
+    rolling: true,
     store: sessionStore,
     cookie: {
       httpOnly: true,

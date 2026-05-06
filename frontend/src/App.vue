@@ -16,9 +16,9 @@ const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
 }
 
-const handleLogout = () => {
+const handleLogout = async () => {
   closeMobileMenu()
-  authStore.logout()
+  await authStore.logout()
   router.push('/')
 }
 

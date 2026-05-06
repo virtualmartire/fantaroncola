@@ -19,6 +19,11 @@ router.post('/register', authRateLimit, authController.register);
 // @access  Public
 router.post('/login', authRateLimit, authController.login);
 
+// @route   POST api/auth/logout
+// @desc    Logout user
+// @access  Public
+router.post('/logout', authController.logout);
+
 // @route   GET api/auth/me
 // @desc    Get current user
 // @access  Private

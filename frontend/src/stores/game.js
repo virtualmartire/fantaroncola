@@ -81,12 +81,6 @@ export const useGameStore = defineStore('game', () => {
   }
 
   async function fetchTeam() {
-    if (!localStorage.getItem('token')) {
-      userTeam.value = []
-      draftTeam.value = []
-      return
-    }
-
     try {
       const data = await api.get('/team')
       userTeam.value = data

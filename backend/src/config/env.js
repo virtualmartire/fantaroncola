@@ -116,6 +116,7 @@ module.exports = {
   trustProxy: parseTrustProxy(getRawEnv('TRUST_PROXY')),
   jwtSecret: requireEnv('JWT_SECRET', 'secret'),
   sessionSecret: requireEnv('SESSION_SECRET', 'fantaroncola-session-secret'),
+  authSessionMaxAgeMs: getIntEnv('AUTH_SESSION_MAX_AGE_MS', 30 * 24 * 60 * 60 * 1000),
   sessionCookieSameSite: parseSameSite(getRawEnv('SESSION_COOKIE_SAME_SITE')),
   sessionCookieSecure: parseCookieSecure(getRawEnv('SESSION_COOKIE_SECURE')),
   allowedOrigins: getListEnv('CORS_ORIGIN'),
