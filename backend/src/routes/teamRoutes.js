@@ -14,6 +14,11 @@ router.get('/settings', auth, teamController.getTeamSettings);
 // @access  Private/Admin
 router.get('/admin/stats', auth, admin, teamController.getAdminStats);
 
+// @route   GET api/team/admin/users
+// @desc    Get all registered users with their teams
+// @access  Private/Admin
+router.get('/admin/users', auth, admin, teamController.getAdminUsers);
+
 // @route   PUT api/team/settings
 // @desc    Update global team editing settings
 // @access  Private/Admin

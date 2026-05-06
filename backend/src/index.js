@@ -190,6 +190,7 @@ const initDb = async () => {
       description TEXT,
       category VARCHAR(32) DEFAULT 'adulti',
       image VARCHAR(255),
+      is_available BOOLEAN DEFAULT TRUE,
       display_order INTEGER DEFAULT 0,
       day1_score INTEGER DEFAULT 0,
       day2_score INTEGER DEFAULT 0,
@@ -222,6 +223,23 @@ const initDb = async () => {
   try {
       await db.query("ALTER TABLE singers ADD COLUMN IF NOT EXISTS category VARCHAR(32) DEFAULT 'adulti'");
   } catch (e) { console.log('Column category might already exist'); }
+
+  // Add is_available if not exists (migration)
+  try {
+      await db.query('ALTER TABLE singers ADD COLUMN IF NOT EXISTS is_available BOOLEAN DEFAULT TRUE');
+  } catch (e) { console.log('Column is_available might already exist'); }
+
+  await db.query(
+    'UPDATE singers SET is_available = TRUE WHERE is_available IS NULL'
+  );
+
+  await db.query(
+    'ALTER TABLE singers ALTER COLUMN is_available SET DEFAULT TRUE'
+  );
+
+  await db.query(
+    'ALTER TABLE singers ALTER COLUMN is_available SET NOT NULL'
+  );
 
   // Add display_order if not exists (migration)
   try {
@@ -274,6 +292,7 @@ const initDb = async () => {
           const seedKey = getSeedKey(singer, index);
           const legacyPlaceholderName = getLegacyPlaceholderName(index);
           const searchNames = getSingerSearchNames(singer);
+          const isAvailable = singer.is_available !== false;
           const displayOrder = index + 1;
 
           let canonicalSinger = await db.query(
@@ -323,10 +342,10 @@ const initDb = async () => {
           }
 
           await db.query(
-            `INSERT INTO singers (seed_key, name, song_title, description, category, image, display_order, day1_score, day2_score, day3_score, total_score) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, 0, 0, 0, 0) 
+            `INSERT INTO singers (seed_key, name, song_title, description, category, image, is_available, display_order, day1_score, day2_score, day3_score, total_score)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 0, 0, 0, 0)
              ON CONFLICT (seed_key) 
-             DO UPDATE SET name = $2, song_title = $3, description = $4, category = $5, image = $6, display_order = $7`,
+             DO UPDATE SET name = $2, song_title = $3, description = $4, category = $5, image = $6, is_available = $7, display_order = $8`,
             [
               seedKey,
               singer.name,
@@ -334,6 +353,7 @@ const initDb = async () => {
               singer.description || '',
               singer.category || 'adulti',
               singer.image,
+              isAvailable,
               displayOrder,
             ]
           );

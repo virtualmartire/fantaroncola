@@ -92,6 +92,18 @@ const handleDiscardDraft = () => {
 
 const isSingerSelected = (singerId) => store.draftTeam.some((singer) => singer.id === singerId)
 const canSelectSinger = (singer) => store.canSelectSinger(singer)
+const isSingerUnavailable = (singer) => store.isSingerUnavailable(singer)
+const singerActionLabel = (singer) => {
+  if (isSingerSelected(singer.id)) {
+    return 'Selezionato'
+  }
+
+  if (isSingerUnavailable(singer) && !canSelectSinger(singer)) {
+    return 'Non disponibile'
+  }
+
+  return 'Aggiungi'
+}
 const requiresTeamUpdate = computed(() => authStore.user?.is_team_locked && !store.isCommittedTeamComplete)
 const isTeamEditingDisabled = computed(() => (
   authStore.user?.is_team_locked && !allowLockedTeamEdits.value && !requiresTeamUpdate.value
@@ -249,8 +261,16 @@ const teamDescription = computed(() => {
             >
               {{ singer.description }}
             </div>
-            <div class="gold-pill mx-auto mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold">
-              {{ singer.category === 'bambini' ? 'Bambini/e' : 'Adulti/e' }}
+            <div class="mt-3 flex flex-wrap items-center justify-center gap-2">
+              <div class="gold-pill inline-flex rounded-full px-3 py-1 text-xs font-semibold">
+                {{ singer.category === 'bambini' ? 'Bambini/e' : 'Adulti/e' }}
+              </div>
+              <div
+                v-if="isSingerUnavailable(singer)"
+                class="status-badge inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+              >
+                Non disponibile
+              </div>
             </div>
           </div>
         </div>
@@ -261,7 +281,7 @@ const teamDescription = computed(() => {
       <div class="mb-4">
         <h2 class="text-2xl font-black tracking-tight text-[#fff0cf]">Cantanti disponibili</h2>
         <p class="gold-copy mt-1 text-sm">
-          Scegli liberamente, ma la squadra deve avere esattamente 2 adulti/e e 2 bambini/e.
+          Scegli liberamente, ma la squadra deve avere esattamente 2 adulti/e e 2 bambini/e. I cantanti ritirati sono segnalati come non disponibili.
         </p>
       </div>
 
@@ -282,7 +302,8 @@ const teamDescription = computed(() => {
             <div
               v-for="singer in section.singers"
               :key="singer.id"
-              class="surface-card rounded-2xl p-4 transition hover:-translate-y-0.5"
+              class="surface-card rounded-2xl p-4 transition"
+              :class="isSingerUnavailable(singer) ? 'opacity-80' : 'hover:-translate-y-0.5'"
             >
               <div class="mb-3 flex items-start gap-3">
                 <img
@@ -299,13 +320,26 @@ const teamDescription = computed(() => {
                   {{ singerInitial(singer) }}
                 </div>
                 <div class="min-w-0 flex-1">
-                  <div class="font-bold text-[#fff0cf]">{{ singer.name }}</div>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <div class="font-bold text-[#fff0cf]">{{ singer.name }}</div>
+                    <div
+                      v-if="isSingerUnavailable(singer)"
+                      class="status-badge rounded-full px-2.5 py-1 text-[11px] font-semibold"
+                    >
+                      Non disponibile
+                    </div>
+                  </div>
                   <div class="text-xs font-semibold text-[#ffe09a]">{{ singer.song_title }}</div>
                   <div
                     v-if="singer.description"
                     class="gold-muted mt-2 text-xs leading-5"
                   >
                     {{ singer.description }}
+                  </div>
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    <div class="gold-pill rounded-full px-3 py-1 text-xs font-semibold">
+                      {{ singer.category === 'bambini' ? 'Bambini/e' : 'Adulti/e' }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -319,7 +353,7 @@ const teamDescription = computed(() => {
                   ? 'cursor-not-allowed border border-[rgba(224,191,115,0.12)] bg-[rgba(255,255,255,0.03)] text-[#6f6042]'
                   : 'gold-button'"
               >
-                {{ isSingerSelected(singer.id) ? 'Selezionato' : 'Aggiungi' }}
+                {{ singerActionLabel(singer) }}
               </button>
             </div>
           </div>

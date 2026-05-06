@@ -85,7 +85,8 @@
     "song_title": "End of beginning - Djo",
     "description": "Nostalgia per il passato e per la citta che ti forma.",
     "category": "adulti",
-    "image": "/photos/marco-caragiulo.jpeg"
+    "image": "/photos/marco-caragiulo.jpeg",
+    "is_available": false
   },
   {
     "seed_key": "slot-1",

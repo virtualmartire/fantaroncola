@@ -52,11 +52,21 @@ export const useGameStore = defineStore('game', () => {
     return Math.max(0, teamLimits[category] - (selectedCounts.value[category] || 0))
   }
 
+  function isSingerUnavailable(singer) {
+    return singer?.is_available === false
+  }
+
+  function hadSingerInCommittedTeam(singerId) {
+    return userTeam.value.some((selectedSinger) => selectedSinger.id === singerId)
+  }
+
   function canSelectSinger(singer) {
     if (draftTeam.value.find((selectedSinger) => selectedSinger.id === singer.id)) return false
 
     const category = singer.category || 'adulti'
     if (!teamLimits[category]) return false
+
+    if (isSingerUnavailable(singer) && !hadSingerInCommittedTeam(singer.id)) return false
 
     return remainingSlotsForCategory(category) > 0
   }
@@ -132,6 +142,7 @@ export const useGameStore = defineStore('game', () => {
     hasDraftChanges,
     categoryLabel,
     remainingSlotsForCategory,
+    isSingerUnavailable,
     canSelectSinger,
     fetchSingers,
     fetchTeam,

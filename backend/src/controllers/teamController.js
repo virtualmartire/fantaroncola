@@ -47,6 +47,14 @@ const canModifyLockedTeam = (teamAccessState, team) => {
   return !isTeamComplete(teamCounts);
 };
 
+const findUnavailableNewSelection = (nextTeam, currentTeam) => {
+  const currentTeamIds = new Set(currentTeam.map((singer) => singer.id));
+
+  return nextTeam.find((singer) => (
+    singer.is_available === false && !currentTeamIds.has(singer.id)
+  ));
+};
+
 const getTeamAccessState = async (userId) => {
   const result = await db.query(
     `SELECT
@@ -89,6 +97,52 @@ const getAdminStats = async () => {
   };
 };
 
+const getAdminUsersWithTeams = async () => {
+  const result = await db.query(
+    `SELECT
+       u.id AS user_id,
+       u.username,
+       u.is_team_locked,
+       s.id AS singer_id,
+       s.name AS singer_name,
+       s.song_title,
+       s.description,
+       s.category,
+       s.image
+     FROM users u
+     LEFT JOIN teams t ON t.user_id = u.id
+     LEFT JOIN singers s ON s.id = t.singer_id
+     WHERE NOT u.is_admin
+     ORDER BY LOWER(u.username) ASC, s.display_order ASC NULLS LAST, s.name ASC NULLS LAST`
+  );
+
+  const usersById = new Map();
+
+  for (const row of result.rows) {
+    if (!usersById.has(row.user_id)) {
+      usersById.set(row.user_id, {
+        id: row.user_id,
+        username: row.username,
+        is_team_locked: Boolean(row.is_team_locked),
+        team: [],
+      });
+    }
+
+    if (row.singer_id) {
+      usersById.get(row.user_id).team.push({
+        id: row.singer_id,
+        name: row.singer_name,
+        song_title: row.song_title,
+        description: row.description,
+        category: row.category,
+        image: row.image,
+      });
+    }
+  }
+
+  return Array.from(usersById.values());
+};
+
 exports.getTeamSettings = async (req, res) => {
   try {
     const settings = await getCurrentTeamSettings();
@@ -103,6 +157,16 @@ exports.getAdminStats = async (req, res) => {
   try {
     const stats = await getAdminStats();
     res.json(stats);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: 'Errore del server' });
+  }
+};
+
+exports.getAdminUsers = async (req, res) => {
+  try {
+    const users = await getAdminUsersWithTeams();
+    res.json(users);
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: 'Errore del server' });
@@ -207,6 +271,13 @@ exports.replaceTeam = async (req, res) => {
     const singersResult = await db.query('SELECT * FROM singers WHERE id = ANY($1::int[])', [uniqueIds]);
     if (singersResult.rows.length !== uniqueIds.length) {
       return res.status(400).json({ message: 'Uno o piu cantanti non sono validi' });
+    }
+
+    const unavailableSinger = findUnavailableNewSelection(singersResult.rows, currentTeam);
+    if (unavailableSinger) {
+      return res.status(400).json({
+        message: `${unavailableSinger.name} non e disponibile per nuove squadre`,
+      });
     }
 
     const counts = countTeamByCategory(singersResult.rows);
