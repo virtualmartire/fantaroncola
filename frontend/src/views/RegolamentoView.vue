@@ -22,6 +22,24 @@ const bonusItems = [
   { label: 'Vince all’applausometro', points: 5 },
 ]
 
+const finaleBonusItems = [
+  { label: 'Arriva primo/a', points: 50 },
+  { label: 'Arriva secondo/a', points: 30 },
+  { label: 'Arriva terzo/a', points: 20 },
+  { label: 'Vince il premio dello staff', points: 15 },
+  { label: 'Interagisce con il pubblico', points: 10 },
+  { label: 'Auguri per la festa della mamma', points: 5 },
+  { label: 'Standing ovation', points: 20 },
+  { label: 'Indossa un dettaglio rosso', points: 5 },
+  { label: 'Ringrazia il pubblico', points: 5 },
+  { label: 'Se dice «Roncola»', points: 5 },
+  { label: 'Posta un selfie durante la serata taggando il profilo IG della Roncola', points: 10 },
+  { label: 'Balla durante la performance', points: 10 },
+  { label: 'Fa un inchino', points: 5 },
+  { label: 'Suona uno strumento durante la performance', points: 10 },
+  { label: 'Batte il cinque a uno dei valletti', points: 5 },
+]
+
 const malusItems = [
   { label: 'Cade sul palco', points: -20 },
   { label: 'Dimentica il testo', points: -15 },
@@ -94,5 +112,24 @@ const malusItems = [
         </ul>
       </section>
     </div>
+
+    <section class="surface-card rounded-2xl px-5 py-6 sm:px-7 sm:py-7">
+      <h2 class="text-lg font-bold tracking-tight text-[#c9e8c4]">Serata Finale</h2>
+      <p class="gold-muted mt-1 text-xs">
+        Bonus validi solo durante la serata finale.
+      </p>
+      <ul class="mt-5 divide-y divide-[rgba(224,191,115,0.12)]">
+        <li
+          v-for="item in finaleBonusItems"
+          :key="item.label"
+          class="flex items-start justify-between gap-4 py-3 first:pt-0"
+        >
+          <span class="text-sm leading-5 text-[#ead7af]">{{ item.label }}</span>
+          <span class="shrink-0 text-sm font-semibold tabular-nums text-[#9fd4a4]">
+            +{{ item.points }}
+          </span>
+        </li>
+      </ul>
+    </section>
   </div>
 </template>
